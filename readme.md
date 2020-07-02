@@ -103,11 +103,11 @@ web framework. MongoDB is used with the [Pymongo](https://pymongo.readthedocs.io
 
 The LogReader code is in the LogReader package. The following is a short overview of its contents:
 
-- __init__.py: AT least currently just initializes logging.
+- \_\_init\_\_.py: AT least currently just initializes logging.
 - app.py: Creates the falcon application including configuring its routes.
 - utils.py: miscellaneous helper methods.
 - db: Pakcage for dealing with MongoDB.
-    - __init__.py: Initialises the DB connection.
+    - \_\_init\_\_.py: Initialises the DB connection.
     - simulations.py: Methods for querying simulations from the DB.
 - controllers: Contains falcon request handler classes.
     - simulations.py: Request handlers related to simulations.
