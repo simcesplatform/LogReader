@@ -3,9 +3,10 @@
 Tests for the simulations db module.
 '''
 import unittest
-
-from LogReader.db import simulations
+from datetime import timedelta  
+from LogReader.db.simulations import getSimulations, simIdAttr, endTimeAttr, startTimeAttr
 from testLogReader import dataManager
+from testLogReader.testingUtils import checkSimulations
 
 class SimTest(unittest.TestCase):
     
@@ -34,12 +35,41 @@ class SimTest(unittest.TestCase):
         '''
         Test that all simulations can be fetched correctly.
         '''
-        results = simulations.getSimulations()
-        self.assertEqual( len( results ), len( self._testData ), 'should have received all simulations.' )
+        results = getSimulations()
+        # check that results match what was expected.
+        checkSimulations( self, results, self._testData )
     
-    def testGetSimulationsByDate(self):
-        pass 
-
+    def testGetSimulationsAfterDate(self):
+        '''
+        Test getting by start date.
+        '''
+        # start time is the start time of second test simulation.
+        start = self._testData[1][startTimeAttr]
+        result = getSimulations( start )
+        # results should not include the first simulation
+        checkSimulations( self, result, self._testData[1:] )
+        
+    def testGetSimulationsBeforeDate(self):
+        '''
+        Get by end date.
+        '''
+        # end is the start time of second simulation.
+        end = self._testData[1][startTimeAttr]
+        result = getSimulations( end = end )
+        # result should not include the third simulation
+        checkSimulations( self, result, self._testData[:2] ) 
+        
+    def testGetSimulationsBetweenDates(self):
+        '''
+        Get by start and end.
+        '''
+        # we want the second simulation so query hour before last simulation start and hour after first simulation start   
+        hour = timedelta( hours = 1 )
+        start = self._testData[0][startTimeAttr] +hour
+        end = self._testData[2][startTimeAttr] -hour
+        result = getSimulations( start, end )
+        checkSimulations( self, result, self._testData[1:2] ) 
+ 
 if __name__ == "__main__":
     # if main file execute tests
     unittest.main()
