@@ -56,9 +56,21 @@ class TestWebServer(unittest.TestCase):
         cls._server = ServerThread( api, cls._port )
         cls._server.start() 
         cls._testData = dataManager.insertTestSimData()
-        # try to make sure that server is up by sleeping
-        # could also try to just make http requests until the server responds.
-        time.sleep( 1 )
+        # test that server is up
+        retries = 10 # try retries times to make a test request
+        success = False 
+        while not success:
+            try:
+                requests.get( f'http://localhost:{cls._port}')
+                
+            except requests.exceptions.ConnectionError as e:
+                if retries == 0:
+                    raise e
+                
+                retries -= 1
+                continue
+                
+            success = True
 
     @classmethod
     def tearDownClass(cls):
