@@ -47,8 +47,46 @@ class TestSimApi( ApiTest ):
         result = self.simulate_get( '/simulations' )
         testingUtils.checkSimulations(self, result.json, self._testData )
         
-
-
+    def testGetSimulationsAfterDate(self):
+        '''
+        Test get simulations after given date.
+        '''
+        params = { 'fromDate': '2020-06-03T10:01:52.345Z' }
+        result = self.simulate_get( '/simulations', params = params )
+        self.assertEqual( result.status_code, 200 )
+        # we should haven gotten the latter two simulations.
+        testingUtils.checkSimulations(self, result.json, self._testData[1:] )
+        
+    def testGetSimulationsBeforeDate(self):
+        '''
+        Test get simulations started on or before given date.
+        '''
+        params = { 'toDate': '2020-06-03T10:01:52.345Z' }
+        result = self.simulate_get( '/simulations', params = params )
+        self.assertEqual( result.status_code, 200 )
+        # we should get the first two simulations
+        testingUtils.checkSimulations(self, result.json, self._testData[:2] )
+        
+    def testGetSimulationsBetweenDates(self):
+        '''
+        Test get simulations executed between given dates.
+        '''
+        params = { 'fromDate': '2020-06-03T09:01:52.345Z',
+                  'toDate': '2020-06-03T11:01:52.345Z'
+               }
+        result = self.simulate_get( '/simulations', params = params )
+        self.assertEqual( result.status_code, 200 )
+        # we should get only the second simulation.
+        testingUtils.checkSimulations(self, result.json, self._testData[1:2] )
+        
+    def testGetSimulationsWithBadDate(self):
+        '''
+        Check that we get a HTTP bad request response with an invalid date.
+        '''
+        params = { 'toDate': '2020-06-0310:01:52.345Z' }
+        result = self.simulate_get( '/simulations', params = params )
+        self.assertEqual( result.status_code, 400 )
+    
 if __name__ == "__main__":
     # execute tests if main file.
     unittest.main()

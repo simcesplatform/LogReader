@@ -5,12 +5,11 @@ Some tests for the application when it is run with a real WSGI server.
 import os
 import unittest
 import threading
-import time
 
 import waitress
 import requests
 
-from testLogReader import dataManager
+from testLogReader import dataManager, testingUtils
 from LogReader.app import api
 
 class ServerThread(threading.Thread):
@@ -56,12 +55,13 @@ class TestWebServer(unittest.TestCase):
         cls._server = ServerThread( api, cls._port )
         cls._server.start() 
         cls._testData = dataManager.insertTestSimData()
+        cls._baseURL = f'http://localhost:{cls._port}'
         # test that server is up
         retries = 10 # try retries times to make a test request
         success = False 
         while not success:
             try:
-                requests.get( f'http://localhost:{cls._port}')
+                requests.get( cls._baseURL)
                 
             except requests.exceptions.ConnectionError as e:
                 if retries == 0:
@@ -80,11 +80,25 @@ class TestWebServer(unittest.TestCase):
         dataManager.deleteTestSimData() 
         
     def testGetSimulations(self):
-        result = requests.get( f'http://localhost:{self._port}/simulations' )
+        '''
+        Test get all simulations.
+        '''
+        result = requests.get( self._baseURL +'/simulations' )
         self.assertEqual( result.status_code, 200, 'Incorrect response status.' )
-        self.assertEqual( len( result.json() ), len( self._testData ), 'Should get all simulations.' )
-
-
+        testingUtils.checkSimulations(self, result.json(), self._testData )
+        
+    def testGetSimulationsBetweenDates(self):
+        '''
+        Test get simulations executed between given dates.
+        '''
+        params = { 'fromDate': '2020-06-03T09:01:52.345Z',
+                  'toDate': '2020-06-03T11:01:52.345Z'
+               }
+        result = requests.get( self._baseURL +'/simulations', params = params )
+        self.assertEqual( result.status_code, 200 )
+        # we should get only the second simulation.
+        testingUtils.checkSimulations(self, result.json(), self._testData[1:2] )
+    
 if __name__ == "__main__":
     # execute tests
     unittest.main()
