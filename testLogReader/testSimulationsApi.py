@@ -9,7 +9,7 @@ from falcon import testing
 
 from LogReader.app import api
 
-from testLogReader import dataManager
+from testLogReader import dataManager, testingUtils
 
 class ApiTest(testing.TestCase):
     '''
@@ -45,7 +45,7 @@ class TestSimApi( ApiTest ):
         Test get all simulations.
         '''
         result = self.simulate_get( '/simulations' )
-        self.assertEqual( len( result.json ), len( self._testData ) )
+        testingUtils.checkSimulations(self, result.json, self._testData )
         
 
 
