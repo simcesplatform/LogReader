@@ -4,7 +4,7 @@ Tests for the simulations db module.
 '''
 import unittest
 from datetime import timedelta  
-from LogReader.db.simulations import getSimulations, simIdAttr, endTimeAttr, startTimeAttr
+from LogReader.db.simulations import getSimulations, getSimulationById, simIdAttr, endTimeAttr, startTimeAttr
 from testLogReader import dataManager
 from testLogReader.testingUtils import checkSimulations
 
@@ -69,6 +69,16 @@ class SimTest(unittest.TestCase):
         end = self._testData[2][startTimeAttr] -hour
         result = getSimulations( start, end )
         checkSimulations( self, result, self._testData[1:2] ) 
+        
+    def testGetSimulationById(self):
+        simId = self._testData[2][simIdAttr]
+        result = getSimulationById( simId )
+        self.assertIn( simIdAttr, result )
+        self.assertEqual( result[simIdAttr], simId )
+        
+    def testGetSimulationNotFound(self):
+        result = getSimulationById( 'foo'  )
+        self.assertIsNone( result )
  
 if __name__ == "__main__":
     # if main file execute tests

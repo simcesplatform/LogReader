@@ -34,3 +34,8 @@ def getSimulations( start = None, end = None ):
     # Get all attributes except the MongoDB id.
     result = db[simCollection].find( query, { '_id': 0 } )
     return list( result )
+
+def getSimulationById( simId ):
+    query = { simIdAttr: simId }
+    log.debug( f'Getting simulation by id {simId} with query {query}.' )
+    return db[simCollection].find_one( query, { '_id': 0 } )
