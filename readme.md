@@ -61,6 +61,8 @@ This uses the same MongoDB connection information as the main app. This data can
 
     python -m testLogReader.dataManager -d
 
+NOTE: This drops the whole simulations collection before inserting data and when removing test data.
+
 ### Dokcer compose
 
 Docker-compose can be used to launch Logreader and a MongoDB instance. First build the LogReader Docker image:
@@ -78,6 +80,8 @@ LogReader listens on localhost port 8080 and MongoDB on localhost 27017. The tes
 and test data can be removed with:
 
     docker exec -it logreader python -m testLogReader.dataManager -d
+
+NOTE: This drops the whole simulations collection before inserting data and when removing test data.
 
 The system can be removed with:
 
@@ -114,7 +118,7 @@ The LogReader code is in the LogReader package. The following is a short overvie
 
 ### Testing
 
-Testing code is available in the testLogReader pakcage / directory. The testing code uses the build-in Python [unittest](https://docs.python.org/3.7/library/unittest.html) framework.
+Testing code and test data is available in the testLogReader pakcage / directory. The testing code uses the build-in Python [unittest](https://docs.python.org/3.7/library/unittest.html) framework.
 All tests can be executed with:
 
     python -m unittest
@@ -123,7 +127,7 @@ Tests from a particular module can be also executed for example:
 
     python -m unittest testLogReader.testSimulations
 
-These tests require a running MongoDB instance. Connection information is given with the same environment variables as for LogReader itself. Tests can be also run with docker-compose. First build the logreader container which is the same container used when running LogReader:
+These tests require a running MongoDB instance. The tests will delete all existing data in the simulations collection. Connection information is given with the same environment variables as for LogReader itself. Tests can be also run with docker-compose. First build the logreader container which is the same container used when running LogReader:
 
     docker-compose build       
 

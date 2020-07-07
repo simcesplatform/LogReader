@@ -26,6 +26,8 @@ def insertTestSimData():
         # json_util is used to parse the mongodb extended JSON data correctly mainly  dates to python datetime objects
         testSimulations = json.load(simData, object_hook=json_util.object_hook)
             
+    # ensure simulations collection is empty before adding data.
+    deleteTestSimData()
     simCollection.insert_many( testSimulations )
     return testSimulations
 
