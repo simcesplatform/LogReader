@@ -56,8 +56,8 @@ class SimTest(unittest.TestCase):
         # end is the start time of second simulation.
         end = self._testData[1][startTimeAttr]
         result = getSimulations( end = end )
-        # result should not include the third simulation
-        checkSimulations( self, result, self._testData[:2] ) 
+        # should only include first simulation
+        checkSimulations( self, result, self._testData[:1] ) 
         
     def testGetSimulationsBetweenDates(self):
         '''

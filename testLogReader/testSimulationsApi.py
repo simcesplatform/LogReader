@@ -60,13 +60,13 @@ class TestSimApi( ApiTest ):
         
     def testGetSimulationsBeforeDate(self):
         '''
-        Test get simulations started on or before given date.
+        Test get simulations started before given date.
         '''
         params = { 'toDate': '2020-06-03T10:01:52.345Z' }
         result = self.simulate_get( '/simulations', params = params )
         self.assertEqual( result.status_code, 200 )
-        # we should get the first two simulations
-        testingUtils.checkSimulations(self, result.json, self._testData[:2] )
+        # we should get the first simulation
+        testingUtils.checkSimulations(self, result.json, self._testData[:1] )
         
     def testGetSimulationsBetweenDates(self):
         '''

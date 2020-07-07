@@ -18,7 +18,7 @@ def getSimulations( start = None, end = None ):
     '''
     Get simulations. Without parameters returns all simulations.
     start (datetime): If given gets simulations that have been started on or after the given time.
-    end (datetime): If given returns simulations that have been started on or beforre the given time.
+    end (datetime): If given returns simulations that have been started beforre the given time.
     Returns a list of dictionaries.
     '''
     query = {} # MongoDB query, If no parameters will be used as is.
@@ -28,7 +28,7 @@ def getSimulations( start = None, end = None ):
         
     if end:
         # there may or may not be already something for start time in the query 
-        query.setdefault( startTimeAttr, {} )['$lte'] = end
+        query.setdefault( startTimeAttr, {} )['$lt'] = end
     
     log.debug( f'Getting simulations with params start {start}, end: {end}. Using mongo query {query}.' )    
     # Get all attributes except the MongoDB id.
