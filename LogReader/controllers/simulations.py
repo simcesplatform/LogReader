@@ -34,4 +34,16 @@ class SimController:
         log.debug( f'Got request for  simulations with parameters: {req.params}.' )
         
         results = self._simulationStore.getSimulations( fromDate, toDate )
-        resp.media = results 
+        resp.media = results
+        
+    def on_get_simulation(self, req, resp, simId ):
+        '''
+        Response handler for get simulation by id.
+        simId (str): URI template parameter for simulation id.
+        '''
+        log.debug( f'Get simulation with id {simId}.' )
+        result = self._simulationStore.getSimulationById( simId )
+        if result == None:
+            raise falcon.HTTPNotFound( title = 'Simulation not found.', description = f'Simulation with id {simId} not found.' )
+        
+        resp.media = result

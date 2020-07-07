@@ -40,7 +40,10 @@ api.resp_options.media_handlers.update(extra_handlers)
 
 # Add route for getting simulations
 # simController is given the module used to get simulations from the db 
-api.add_route( '/simulations', SimController( simulations ), suffix = 'simulations' )
+simController = SimController( simulations )
+api.add_route( '/simulations', simController, suffix = 'simulations' )
+# add route for getting simulation by id.
+api.add_route( '/simulations/{simId}', simController, suffix = 'simulation' )
 
 if __name__ == '__main__':
     # this is main file launch the application

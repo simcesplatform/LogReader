@@ -11,6 +11,7 @@ import requests
 
 from testLogReader import dataManager, testingUtils
 from LogReader.app import api
+from LogReader.db.simulations import simIdAttr
 
 class ServerThread(threading.Thread):
     '''
@@ -98,6 +99,15 @@ class TestWebServer(unittest.TestCase):
         self.assertEqual( result.status_code, 200 )
         # we should get only the second simulation.
         testingUtils.checkSimulations(self, result.json(), self._testData[1:2] )
+        
+    def testGetSimulationById(self):
+        '''
+        Test get simulation by id.
+        '''
+        simId = self._testData[0][simIdAttr]
+        result = requests.get( self._baseURL +'/simulations/' +simId )
+        self.assertEqual( result.status_code, 200 )
+        self.assertEqual( result.json()[simIdAttr], simId )
     
 if __name__ == "__main__":
     # execute tests

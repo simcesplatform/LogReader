@@ -10,6 +10,7 @@ from falcon import testing
 from LogReader.app import api
 
 from testLogReader import dataManager, testingUtils
+from LogReader.db.simulations import simIdAttr
 
 class ApiTest(testing.TestCase):
     '''
@@ -87,6 +88,24 @@ class TestSimApi( ApiTest ):
         result = self.simulate_get( '/simulations', params = params )
         self.assertEqual( result.status_code, 400 )
     
+    def testGetSimulationById(self):
+        '''
+        Test get simulation by SimulationId.
+        '''
+        simId = self._testData[1][simIdAttr]
+        result = self.simulate_get( f'/simulations/{simId}' )
+        self.assertEqual( result.status_code, 200 )
+        self.assertIsNotNone( result.json )
+        self.assertIn( simIdAttr, result.json )
+        self.assertEqual( result.json[ simIdAttr ], simId )
+        
+    def testGetSimulationByIdNotFound(self):
+        '''
+        Test proper response when simulation not found.
+        '''
+        result = self.simulate_get( '/simulations/foo' )
+        self.assertEqual( result.status_code, 404 )
+
 if __name__ == "__main__":
     # execute tests if main file.
     unittest.main()
