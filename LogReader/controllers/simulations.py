@@ -25,7 +25,7 @@ class SimController:
         '''
         self._simulationStore = simulationStore
         
-    @falcon.before( LogReader.utils.processDateParams )
+    @falcon.before( LogReader.utils.processDateParams, 'fromDate', 'toDate' )
     def on_get_simulations( self, req, resp, toDate = None, fromDate = None  ):
         '''
         Process request for getting list of simulations.
