@@ -71,12 +71,18 @@ class SimTest(unittest.TestCase):
         checkSimulations( self, result, self._testData[1:2] ) 
         
     def testGetSimulationById(self):
+        '''
+        Test get simulation by id from db.
+        '''
         simId = self._testData[2][simIdAttr]
         result = getSimulationById( simId )
         self.assertIn( simIdAttr, result )
         self.assertEqual( result[simIdAttr], simId )
         
     def testGetSimulationNotFound(self):
+        '''
+        Check that we get None if there is no simulation with given id.
+        '''
         result = getSimulationById( 'foo'  )
         self.assertIsNone( result )
  

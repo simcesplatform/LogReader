@@ -36,6 +36,11 @@ def getSimulations( start = None, end = None ):
     return list( result )
 
 def getSimulationById( simId ):
+    '''
+    Get simulation by id.
+    simId (str): Id of a simulation.
+    Returns dict containing simulation info. None if simulation with id not found.
+    '''
     query = { simIdAttr: simId }
     log.debug( f'Getting simulation by id {simId} with query {query}.' )
     return db[simCollection].find_one( query, { '_id': 0 } )
