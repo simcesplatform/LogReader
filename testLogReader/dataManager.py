@@ -17,19 +17,26 @@ simCollection = db[simulations.simCollection]
 # location of json files containing test data.
 testDataDir = pathlib.Path(__file__).parent.absolute() / 'data'
 
+def insertDataFromFile( fileName, collection ):
+    '''
+    Inserts data from a file from the test data directory whose name is given to the given collection.
+    Returns a dict containing the test data.
+    '''
+    with( open( testDataDir / fileName, 'r' )) as data:
+        # json_util is used to parse the mongodb extended JSON data correctly mainly  dates to python datetime objects
+        testItems = json.load(data, object_hook=json_util.object_hook)
+            
+    # ensure collection is empty before adding data.
+    collection.drop()
+    collection.insert_many( testItems )
+    return testItems
+
 def insertTestSimData():
     '''
     Inserts the test simulation data.
     Returns a dict containing the test data.
     '''
-    with( open( testDataDir / 'simulations.json', 'r' )) as simData:
-        # json_util is used to parse the mongodb extended JSON data correctly mainly  dates to python datetime objects
-        testSimulations = json.load(simData, object_hook=json_util.object_hook)
-            
-    # ensure simulations collection is empty before adding data.
-    deleteTestSimData()
-    simCollection.insert_many( testSimulations )
-    return testSimulations
+    return insertDataFromFile( 'simulations.json', simCollection )
 
 def deleteTestSimData():
     '''
