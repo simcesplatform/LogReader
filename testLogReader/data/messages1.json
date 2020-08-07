@@ -1,0 +1,22 @@
+[
+    {
+        "SimulationId": "2020-06-03T04:01:52.345Z",
+        "topic": "SimState",
+        "Type": "SimState",
+        "Timestamp": { "$date": "2020-06-03T04:01:52.345Z" },
+        "SourceProcessId": "simulationManager",
+        "MessageId": "simulationManager-1",
+        "SimulationState": "running"
+    },
+    {
+        "SimulationId": "2020-06-03T04:01:52.345Z",
+        "topic": "Epoch",
+        "EpochNumber": 1,
+        "Type": "Epoch",
+        "Timestamp": { "$date": "2020-06-03T04:01:53Z" },
+        "SourceProcessId": "SimulationManager",
+        "MessageId": "SimulationManager-2",
+        "StartTime": { "$date": "2020-06-03T13:00:00Z" },
+        "EndTime": { "$date": "2020-06-03T14:00:00Z" }
+    }
+]

@@ -10,14 +10,17 @@ import json
 from bson import json_util
 import pathlib
 
-from LogReader.db import db, simulations
+from LogReader.db import db, simulations, messages
 
 # the mongodb collection where simulations are stored.
 simCollection = db[simulations.simCollection]
 # location of json files containing test data.
 testDataDir = pathlib.Path(__file__).parent.absolute() / 'data'
 
-def insertDataFromFile( fileName, collection ):
+# id of simulation for which there are test messages.
+testMsgSimId = '2020-06-03T04:01:52.345Z'
+
+def insertDataFromFile( fileName, collectionName ):
     '''
     Inserts data from a file from the test data directory whose name is given to the given collection.
     Returns a dict containing the test data.
@@ -27,6 +30,7 @@ def insertDataFromFile( fileName, collection ):
         testItems = json.load(data, object_hook=json_util.object_hook)
             
     # ensure collection is empty before adding data.
+    collection = db[collectionName]
     collection.drop()
     collection.insert_many( testItems )
     return testItems
@@ -36,7 +40,7 @@ def insertTestSimData():
     Inserts the test simulation data.
     Returns a dict containing the test data.
     '''
-    return insertDataFromFile( 'simulations.json', simCollection )
+    return insertDataFromFile( 'simulations.json', simulations.simCollection )
 
 def deleteTestSimData():
     '''
@@ -44,15 +48,26 @@ def deleteTestSimData():
     '''
     simCollection.drop()
     
+def insertTestMsgData():
+    '''
+    Inserts test messages to db.
+    '''
+    return insertDataFromFile( 'messages1.json', messages.collectionNamePrefix +testMsgSimId )
+
+def deleteTestMsgData():
+    db[messages.collectionNamePrefix +testMsgSimId ].drop()
+
 if __name__ == '__main__':
     # insert or delete the test data
     if len( sys.argv ) < 2:
         insertTestSimData()
-        print( 'Inserted test simulation data.' )
+        insertTestMsgData()
+        print( 'Inserted test simulation and message data.' )
         
     elif sys.argv[1] == '-d':
         deleteTestSimData()
-        print( 'Deleted test simulations from database.' )
+        deleteTestMsgData()
+        print( 'Deleted test simulations and messages from database.' )
         
     else:
         print( 'Usage: without parameters adds test data. With parameter -d removes inserted test data.' )
