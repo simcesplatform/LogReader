@@ -5,9 +5,10 @@ Created on 7.8.2020
 @author: hylli
 '''
 import unittest
+from builtins import classmethod
 
 from testLogReader import dataManager
-from builtins import classmethod
+from LogReader.db import messages
 
 class TestMessages(unittest.TestCase):
     
@@ -28,8 +29,18 @@ class TestMessages(unittest.TestCase):
 
 
     def testGetAllMessages(self):
-        pass
-
+        '''
+        Test that we can get all messages.
+        '''
+        result = messages.getMessages( dataManager.testMsgSimId )
+        self.assertEqual( len( result ), len( self._testData ) )
+        
+    def testGetMessagesSimulationNotFound(self):
+        '''
+        Test that we get None with id of a simulation that does not exist.
+        '''
+        result = messages.getMessages( 'foo' )
+        self.assertIsNone( result )
 
 if __name__ == "__main__":
     unittest.main()
