@@ -40,6 +40,16 @@ class TestMessages(unittest.TestCase):
         '''
         result = messages.getMessages( 'foo' )
         self.assertIsNone( result )
+        
+    def testGetMessagesByEpoch(self):
+        '''
+        Test get messages by epoch number.
+        '''
+        epoch = 1
+        result = messages.getMessages( dataManager.testMsgSimId, epoch = epoch )
+        expected = [ msg for msg in self._testData if msg.get( messages.epochNumAttr ) == epoch ]
+        testingUtils.checkMessages( self, result, expected )
+        
 
 if __name__ == "__main__":
     unittest.main()

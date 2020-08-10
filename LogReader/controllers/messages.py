@@ -7,6 +7,8 @@ import logging
 
 import falcon
 
+from LogReader import utils
+
 log = logging.getLogger( __name__ )
 
 class MsgController(object):
@@ -26,8 +28,10 @@ class MsgController(object):
         Get messages for simulation:
         simId: Simulation id from the URL path.
         '''
-        log.debug( f'Get messages for simulation with id {simId}.' )
-        result = self._messageStore.getMessages( simId )
+        log.debug( f'Get messages for simulation with id {simId} with parameters {req.params}.' )
+        epoch = utils.paramToInt( 'epoch', req )
+            
+        result = self._messageStore.getMessages( simId, epoch = epoch )
         if result == None:
             raise falcon.HTTPNotFound( title = 'Simulation not found.', description = f'Simulation with id {simId} not found.' )
         

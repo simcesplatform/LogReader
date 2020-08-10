@@ -40,3 +40,19 @@ def processDateParams( req, resp, resource, params, fromDateParam, toDateParam  
         except ValueError:
             raise falcon.HTTPBadRequest( title = "Invalid datetime value", description = f"Invalid datetime value for {toDateParam}: {toDate}" )
         
+def paramToInt( paramName, req ):
+    '''
+    Convert a query parameter from given request to integer. Raises BadRequest if the value cannot be converted into an integer.
+    paramName (str): Name of a query parameter whose value should be an integer.
+    req: A falcon HTTP request that has the query parameter.
+    Returns the parameter value as an integer or None if the request does not have a value for the parameter.
+    '''
+    param = req.get_param( paramName )
+    if param:
+        try:
+            param = int( param )
+            
+        except ValueError:
+            raise falcon.HTTPBadRequest( title = "Invalid integer value", description = f"Invalid integer value for {paramName}: {param}." )
+        
+    return param
