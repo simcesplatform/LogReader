@@ -3,7 +3,19 @@
 Helper functions used with tests.
 '''
 
+from falcon import testing
+
+from LogReader.app import api
 from LogReader.db.simulations import simIdAttr
+
+class ApiTest(testing.TestCase):
+    '''
+    Super class for api tests which gets the falcon api instance.
+    '''
+
+    def setUp(self):
+        super(ApiTest, self).setUp()
+        self.app = api
 
 def checkSimulations( test, resultSims, expectedSims ):
     '''

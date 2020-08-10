@@ -5,25 +5,12 @@ Uses falcons testing tools which simulate HTTP requests.
 '''
 import unittest
 
-from falcon import testing
-
-from LogReader.app import api
-
 from testLogReader import dataManager, testingUtils
 from LogReader.db.simulations import simIdAttr
 
-class ApiTest(testing.TestCase):
+class TestSimApi( testingUtils.ApiTest ):
     '''
-    Super class for api tests which gets the falcon api instance.
-    '''
-
-    def setUp(self):
-        super(ApiTest, self).setUp()
-        self.app = api
-
-class TestSimApi( ApiTest ):
-    '''
-    The actual simulation API tests.
+    The simulation API tests.
     '''
     
     @classmethod
