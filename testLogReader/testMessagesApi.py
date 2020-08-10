@@ -28,7 +28,7 @@ class TestMessagesApi( testingUtils.ApiTest ):
         Test we can get all messages.
         '''
         result = self.simulate_get( f'/simulations/{dataManager.testMsgSimId}/messages' )
-        self.assertEqual( len( result.json ), len( self._testData ) )
+        testingUtils.checkMessages( self, result.json, self._testData )
         
     def testGetMessagesSimulationNotFound(self):
         '''

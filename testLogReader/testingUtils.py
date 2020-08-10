@@ -24,7 +24,20 @@ def checkSimulations( test, resultSims, expectedSims ):
     resultSims (list): List of simulations.
     expectedSims (list): List of simulations.
     '''
-    # get simulation ids of results and expected and check they contain the same.
-    simIds = [ sim[ simIdAttr ] for sim in resultSims ]
-    expectedIds = [ sim[ simIdAttr ] for sim in expectedSims ]
-    test.assertCountEqual( simIds, expectedIds, 'Did not get the expected simulations.' )
+    checkItemsById( test, simIdAttr, resultSims, expectedSims )
+    
+def checkMessages( test, resultMsgs, expectedMsgs ):
+    checkItemsById( test, 'MessageId', resultMsgs, expectedMsgs )
+    
+def checkItemsById( test, idAttr, result, expected ):
+    '''
+    Check by id that results and expected are the same.
+    test (unittest.TestCase) Test case which uses this so we can use its assert methods.
+    idAttr (str): Name of attribute containing the id of the items.
+    result (list): List of items.
+    expected (list): List of expected items.
+    '''
+    # get ids of results and expected and check they contain the same.
+    ids = [ item[ idAttr ] for item in result ]
+    expectedIds = [ item[ idAttr ] for item in expected ]
+    test.assertCountEqual( ids, expectedIds, 'Did not get the expected items.' )

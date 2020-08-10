@@ -6,7 +6,7 @@ Tests for getting messages from the database.
 import unittest
 from builtins import classmethod
 
-from testLogReader import dataManager
+from testLogReader import dataManager, testingUtils
 from LogReader.db import messages
 
 class TestMessages(unittest.TestCase):
@@ -32,7 +32,7 @@ class TestMessages(unittest.TestCase):
         Test that we can get all messages.
         '''
         result = messages.getMessages( dataManager.testMsgSimId )
-        self.assertEqual( len( result ), len( self._testData ) )
+        testingUtils.checkMessages( self, result, self._testData )
         
     def testGetMessagesSimulationNotFound(self):
         '''
