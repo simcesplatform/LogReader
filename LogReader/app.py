@@ -14,7 +14,8 @@ import falcon
 import waitress
 
 from LogReader.controllers.simulations import SimController
-from LogReader.db import simulations
+from LogReader.controllers.messages import MsgController
+from LogReader.db import simulations, messages
 from LogReader import utils
 import LogReader
 
@@ -44,6 +45,10 @@ simController = SimController( simulations )
 api.add_route( '/simulations', simController, suffix = 'simulations' )
 # add route for getting simulation by id.
 api.add_route( '/simulations/{simId}', simController, suffix = 'simulation' )
+# Add route for getting messages for simulation
+# Give the messages controller the messages db module as the source for messages.
+msgController = MsgController( messages )
+api.add_route( '/simulations/{simId}/messages', msgController )
 
 if __name__ == '__main__':
     # this is main file launch the application

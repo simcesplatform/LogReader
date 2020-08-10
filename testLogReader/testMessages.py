@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 '''
-Created on 7.8.2020
-
-@author: hylli
+Tests for getting messages from the database.
 '''
+
 import unittest
 from builtins import classmethod
 
