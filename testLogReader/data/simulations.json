@@ -1,20 +1,20 @@
 [
     {
         "SimulationId": "2020-06-03T04:01:52.345Z",
-        "startTime": { "$date": "2020-06-03T04:01:52.345Z" },
-        "endTime": { "$date": "2020-06-03T04:11:52.345Z" },
-        "epochs": 50
+        "StartTime": { "$date": "2020-06-03T04:01:52.345Z" },
+        "EndTime": { "$date": "2020-06-03T04:11:52.345Z" },
+        "Epochs": 50
     },
     {
         "SimulationId": "2020-06-03T10:01:52.345Z",
-        "startTime": { "$date": "2020-06-03T10:01:52.345Z" },
-        "endTime": { "$date": "2020-06-03T10:05:52.345Z" },
-        "epochs": 40
+        "StartTime": { "$date": "2020-06-03T10:01:52.345Z" },
+        "EndTime": { "$date": "2020-06-03T10:05:52.345Z" },
+        "Epochs": 40
     },
     {
         "SimulationId": "2020-06-04T04:01:52.345Z",
-        "startTime": { "$date": "2020-06-04T04:01:52.345Z" },
-        "endTime": { "$date": "2020-06-03T04:15:52.345Z" },
-        "epochs": 100
+        "StartTime": { "$date": "2020-06-04T04:01:52.345Z" },
+        "EndTime": { "$date": "2020-06-03T04:15:52.345Z" },
+        "Epochs": 100
     }
 ]

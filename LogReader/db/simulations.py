@@ -7,8 +7,8 @@ from LogReader.db import db
 
 # simulation attribute names
 simIdAttr = 'SimulationId'
-startTimeAttr = 'startTime'
-endTimeAttr = 'endTime'
+startTimeAttr = 'StartTime'
+endTimeAttr = 'EndTime'
 
 log = logging.getLogger( __name__ )
 # name of the collection containing information about simulations
