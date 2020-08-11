@@ -23,15 +23,18 @@ class MsgController(object):
         '''
         self._messageStore = messageStore
         
-    def on_get(self, req, resp, simId):
+    def on_get(self, req, resp, simId ):
         '''
         Get messages for simulation:
         simId: Simulation id from the URL path.
         '''
         log.debug( f'Get messages for simulation with id {simId} with parameters {req.params}.' )
+        # Get possible epoch filtering parameters and check that they are integers.
         epoch = utils.paramToInt( 'epoch', req )
+        startEpoch = utils.paramToInt( 'startEpoch', req )
+        endEpoch = utils.paramToInt( 'endEpoch', req )
             
-        result = self._messageStore.getMessages( simId, epoch = epoch )
+        result = self._messageStore.getMessages( simId, epoch = epoch, startEpoch = startEpoch, endEpoch = endEpoch )
         if result == None:
             raise falcon.HTTPNotFound( title = 'Simulation not found.', description = f'Simulation with id {simId} not found.' )
         

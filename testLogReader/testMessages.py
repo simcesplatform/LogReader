@@ -50,6 +50,34 @@ class TestMessages(unittest.TestCase):
         expected = [ msg for msg in self._testData if msg.get( messages.epochNumAttr ) == epoch ]
         testingUtils.checkMessages( self, result, expected )
         
-
+    def testGetMessagesByStartEpoch(self):
+        '''
+        test get messages starting from given epoch.
+        '''
+        startEpoch = 2
+        result = messages.getMessages( dataManager.testMsgSimId, startEpoch = startEpoch )
+        expected = [ msg for msg in self._testData if messages.epochNumAttr in msg and msg[messages.epochNumAttr] >= startEpoch ]
+        testingUtils.checkMessages( self, result, expected )
+        
+    def testGetMessagesByEndEpoch(self):
+        '''
+        test get messages ending at given epoch.
+        '''
+        endEpoch = 2
+        result = messages.getMessages( dataManager.testMsgSimId, endEpoch = endEpoch )
+        expected = [ msg for msg in self._testData if messages.epochNumAttr in msg and msg[messages.epochNumAttr] <= endEpoch ]
+        testingUtils.checkMessages( self, result, expected )
+        
+    def testGetMessagesBetweenEpochs(self):
+        '''
+        test get messages between given epochs
+        '''
+        startEpoch = 2
+        endEpoch = 3
+        result = messages.getMessages( dataManager.testMsgSimId, startEpoch = startEpoch, endEpoch = endEpoch )
+        expected = [ msg for msg in self._testData if messages.epochNumAttr in msg and msg[messages.epochNumAttr] >= startEpoch and msg[messages.epochNumAttr] <= endEpoch ]
+        testingUtils.checkMessages( self, result, expected )
+    
+        
 if __name__ == "__main__":
     unittest.main()

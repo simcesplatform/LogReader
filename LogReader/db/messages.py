@@ -13,14 +13,16 @@ log = logging.getLogger( __name__ )
 
 collectionNamePrefix = 'simulation_'
  
-def getMessages( simId, epoch  = None ):
+def getMessages( simId, epoch  = None, startEpoch = None, endEpoch = None ):
     '''
     Get messages that match the given parameters.
     simId: Id of the simualtion whose messages are fetched.
     epoch (int): Return messages from the given epoch.  
+    startEpoch (integer): Return messages from and after the given epoch.
+    endEpoch (integer): Return messages from and before the given epoch.
     Returns a list of dictionaries. None if there is no collection for the messages.
     '''
-    log.debug( f'Get messages for simulation {simId} with parameters epoch: {epoch},.' )
+    log.debug( f'Get messages for simulation {simId} with parameters epoch: {epoch}, startEpoch: {startEpoch}, endEpoch: {endEpoch}, .' )
     collectionName = collectionNamePrefix +simId
     if len( db.list_collection_names( filter = { 'name': collectionName } ) ) == 0:
         log.debug( f'No collection with name {collectionName}.')
@@ -29,6 +31,12 @@ def getMessages( simId, epoch  = None ):
     query = {}
     if epoch != None:
         query[epochNumAttr] = epoch
+    
+    if startEpoch != None:
+        query[epochNumAttr] = { '$gte': startEpoch }
+        
+    if endEpoch != None:
+        query.setdefault( epochNumAttr, {} )['$lte'] = endEpoch
     
     log.debug( f'Getting messages from collection {collectionName} with query: {query}.')    
     result = db[ collectionName ].find( query, { '_id': 0 } )

@@ -52,6 +52,19 @@ class TestMessagesApi( testingUtils.ApiTest ):
         expected = [ msg for msg in self._testData if msg.get( messages.epochNumAttr ) == epoch ]
         testingUtils.checkMessages( self, result.json, expected )
         
+    def testGetMessagesBetweenEpochs(self):
+        '''
+        Test get messages between given start and end epochs.
+        '''
+        start = 2
+        end = 3
+        params = { 'startEpoch': start, 'endEpoch': end }
+        result = self.simulate_get( path, params = params )
+        expected = [ msg for msg in self._testData if messages.epochNumAttr in msg and msg[messages.epochNumAttr] >= start and msg[messages.epochNumAttr] <= end ]
+        testingUtils.checkMessages( self, result.json, expected )
+    
+        
+        
     def testGetMessagesByInvalidEpoch(self):
         '''
         Test get bad request error with epoch number not an integer.
