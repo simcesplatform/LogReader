@@ -21,6 +21,33 @@
     },
     {
         "SimulationId": "2020-06-03T04:01:52.345Z",
+        "Topic": "weather.current",
+        "EpochNumber": 1,
+        "Type": "Result",
+        "Timestamp": { "$date": "2020-06-03T04:01:55Z" },
+        "SourceProcessId": "weatherDivinity",
+        "MessageId": "weatherDivinity-1"
+    },
+    {
+        "SimulationId": "2020-06-03T04:01:52.345Z",
+        "Topic": "energy.production",
+        "EpochNumber": 1,
+        "Type": "Result",
+        "Timestamp": { "$date": "2020-06-03T04:01:56Z" },
+        "SourceProcessId": "solarPlant1",
+        "MessageId": "solarPlant1-1"
+    },
+    {
+        "SimulationId": "2020-06-03T04:01:52.345Z",
+        "Topic": "weather.forecast",
+        "EpochNumber": 1,
+        "Type": "Forecast",
+        "Timestamp": { "$date": "2020-06-03T04:01:56Z" },
+        "SourceProcessId": "weatherDivinity",
+        "MessageId": "weatherDivinity-2"
+    },
+    {
+        "SimulationId": "2020-06-03T04:01:52.345Z",
         "Topic": "Epoch",
         "EpochNumber": 2,
         "Type": "Epoch",
@@ -29,6 +56,33 @@
         "MessageId": "SimulationManager-3",
         "StartTime": { "$date": "2020-06-03T14:00:00Z" },
         "EndTime": { "$date": "2020-06-03T15:00:00Z" }
+    },
+    {
+        "SimulationId": "2020-06-03T04:01:52.345Z",
+        "Topic": "weather.forecast",
+        "EpochNumber": 2,
+        "Type": "Forecast",
+        "Timestamp": { "$date": "2020-06-03T04:02:55Z" },
+        "SourceProcessId": "weatherDivinity",
+        "MessageId": "weatherDivinity-3"
+    },
+    {
+        "SimulationId": "2020-06-03T04:01:52.345Z",
+        "Topic": "weather.current",
+        "EpochNumber": 2,
+        "Type": "Result",
+        "Timestamp": { "$date": "2020-06-03T04:02:56Z" },
+        "SourceProcessId": "weatherDivinity",
+        "MessageId": "weatherDivinity-4"
+    },
+    {
+        "SimulationId": "2020-06-03T04:01:52.345Z",
+        "Topic": "energy.production",
+        "EpochNumber": 2,
+        "Type": "Result",
+        "Timestamp": { "$date": "2020-06-03T04:02:56Z" },
+        "SourceProcessId": "solarPlant1",
+        "MessageId": "solarPlant1-2"
     },
     {
         "SimulationId": "2020-06-03T04:01:52.345Z",

@@ -78,6 +78,23 @@ class TestMessages(unittest.TestCase):
         expected = [ msg for msg in self._testData if messages.epochNumAttr in msg and msg[messages.epochNumAttr] >= startEpoch and msg[messages.epochNumAttr] <= endEpoch ]
         testingUtils.checkMessages( self, result, expected )
     
+    def testGetMessagesByProcess(self):
+        '''
+        Test get messages by source process id.
+        '''
+        process = [ 'solarPlant1' ]
+        result = messages.getMessages( dataManager.testMsgSimId, process = process )
+        expected = [ msg for msg in self._testData if msg[ messages.processAttr ] in process ]
+        testingUtils.checkMessages( self, result, expected )
+        
+    def testGetMessagesByProcesses(self):
+        '''
+        Test get messages by multiple source process ids.
+        '''
+        process = [ 'solarPlant1', 'weatherDivinity' ]
+        result = messages.getMessages( dataManager.testMsgSimId, process = process )
+        expected = [ msg for msg in self._testData if msg[ messages.processAttr ] in process ]
+        testingUtils.checkMessages( self, result, expected )
         
 if __name__ == "__main__":
     unittest.main()

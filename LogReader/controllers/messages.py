@@ -33,8 +33,13 @@ class MsgController(object):
         epoch = utils.paramToInt( 'epoch', req )
         startEpoch = utils.paramToInt( 'startEpoch', req )
         endEpoch = utils.paramToInt( 'endEpoch', req )
+        
+        # get possible process ids and separate comma separated values into a list.
+        process = req.get_param( 'process' )
+        if process:
+            process = process.split( ',' )
             
-        result = self._messageStore.getMessages( simId, epoch = epoch, startEpoch = startEpoch, endEpoch = endEpoch )
+        result = self._messageStore.getMessages( simId, epoch = epoch, startEpoch = startEpoch, endEpoch = endEpoch, process = process  )
         if result == None:
             raise falcon.HTTPNotFound( title = 'Simulation not found.', description = f'Simulation with id {simId} not found.' )
         

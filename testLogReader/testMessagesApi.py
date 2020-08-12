@@ -72,7 +72,17 @@ class TestMessagesApi( testingUtils.ApiTest ):
         params = { 'epoch': 'foo' }
         result = self.simulate_get( path, params = params )
         self.assertEqual( result.status_code, 400 )
-
+        
+    def testGetMessagesByProcesses(self):
+        '''
+        Test get messages by multiple source process ids.
+        '''
+        process = [ 'solarPlant1', 'weatherDivinity' ]
+        params = { 'process': ','.join( process ) }
+        result = self.simulate_get( path, params = params )
+        expected = [ msg for msg in self._testData if msg[ messages.processAttr ] in process ]
+        testingUtils.checkMessages( self, result.json, expected )
+        
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testGetAllMessages']
     unittest.main()
