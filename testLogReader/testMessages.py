@@ -96,5 +96,13 @@ class TestMessages(unittest.TestCase):
         expected = [ msg for msg in self._testData if msg[ messages.processAttr ] in process ]
         testingUtils.checkMessages( self, result, expected )
         
+    def testGetOnlyWarningMessages(self):
+        '''
+        Test get only messages that contain warnings.
+        '''
+        result = messages.getMessages( dataManager.testMsgSimId, onlyWarnings = True )
+        expected = [ msg for msg in self._testData if messages.warningsAttr in msg ]
+        testingUtils.checkMessages( self, result, expected )
+        
 if __name__ == "__main__":
     unittest.main()

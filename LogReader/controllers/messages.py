@@ -39,7 +39,8 @@ class MsgController(object):
         if process:
             process = process.split( ',' )
             
-        result = self._messageStore.getMessages( simId, epoch = epoch, startEpoch = startEpoch, endEpoch = endEpoch, process = process  )
+        onlyWarnings = req.get_param_as_bool( 'onlyWarnings', default = False )
+        result = self._messageStore.getMessages( simId, epoch = epoch, startEpoch = startEpoch, endEpoch = endEpoch, process = process, onlyWarnings = onlyWarnings )
         if result == None:
             raise falcon.HTTPNotFound( title = 'Simulation not found.', description = f'Simulation with id {simId} not found.' )
         

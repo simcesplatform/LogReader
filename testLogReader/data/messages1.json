@@ -25,6 +25,7 @@
         "EpochNumber": 1,
         "Type": "Result",
         "Timestamp": { "$date": "2020-06-03T04:01:55Z" },
+        "Warnings": [ "someWarning" ],
         "SourceProcessId": "weatherDivinity",
         "MessageId": "weatherDivinity-1"
     },
@@ -94,6 +95,16 @@
         "MessageId": "SimulationManager-4",
         "StartTime": { "$date": "2020-06-03T15:00:00Z" },
         "EndTime": { "$date": "2020-06-03T16:00:00Z" }
+    },
+    {
+        "SimulationId": "2020-06-03T04:01:52.345Z",
+        "Topic": "energy.production",
+        "EpochNumber": 3,
+        "Type": "Result",
+        "Timestamp": { "$date": "2020-06-03T04:03:56Z" },
+        "SourceProcessId": "solarPlant1",
+        "Warnings": [ "someWarning" ],
+        "MessageId": "solarPlant1-3"
     },
     {
         "SimulationId": "2020-06-03T04:01:52.345Z",

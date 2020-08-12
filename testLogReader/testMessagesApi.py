@@ -83,6 +83,15 @@ class TestMessagesApi( testingUtils.ApiTest ):
         expected = [ msg for msg in self._testData if msg[ messages.processAttr ] in process ]
         testingUtils.checkMessages( self, result.json, expected )
         
+    def testGetOnlyWarningMessages(self):
+        '''
+        Test get only messages that contain warnings.
+        '''
+        params = { 'onlyWarnings': 'true' }
+        result = self.simulate_get( path, params = params )
+        expected = [ msg for msg in self._testData if messages.warningsAttr in msg ]
+        testingUtils.checkMessages( self, result.json, expected )
+        
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testGetAllMessages']
     unittest.main()
