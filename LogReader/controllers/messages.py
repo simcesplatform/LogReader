@@ -23,7 +23,8 @@ class MsgController(object):
         '''
         self._messageStore = messageStore
         
-    def on_get(self, req, resp, simId ):
+    @falcon.before( utils.processDateParams, 'fromSimDate', 'toSimDate' )
+    def on_get(self, req, resp, simId, fromSimDate = None, toSimDate = None ):
         '''
         Get messages for simulation:
         simId: Simulation id from the URL path.
@@ -40,7 +41,7 @@ class MsgController(object):
             process = process.split( ',' )
             
         onlyWarnings = req.get_param_as_bool( 'onlyWarnings', default = False )
-        result = self._messageStore.getMessages( simId, epoch = epoch, startEpoch = startEpoch, endEpoch = endEpoch, process = process, onlyWarnings = onlyWarnings )
+        result = self._messageStore.getMessages( simId, epoch = epoch, startEpoch = startEpoch, endEpoch = endEpoch, process = process, onlyWarnings = onlyWarnings, fromSimDate = fromSimDate, toSimDate = toSimDate )
         if result == None:
             raise falcon.HTTPNotFound( title = 'Simulation not found.', description = f'Simulation with id {simId} not found.' )
         

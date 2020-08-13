@@ -92,6 +92,19 @@ class TestMessagesApi( testingUtils.ApiTest ):
         expected = [ msg for msg in self._testData if messages.warningsAttr in msg ]
         testingUtils.checkMessages( self, result.json, expected )
         
+    def testGetMessagesBetweenSimDate( self ):
+        '''
+        Get messages between epochs  that contain the given simulation dates.
+        '''
+        fromSimDate = "2020-06-03T14:00:00Z"
+        toSimDate = "2020-06-03T16:00:00Z"
+        result = self.simulate_get( path, params = { 'fromSimDate': fromSimDate, 'toSimDate': toSimDate } )
+        # we expect messages starting from epoch 2 and ending with epoch 3
+        startEpoch = 2
+        endEpoch = 3
+        expected = [ msg for msg in self._testData if messages.epochNumAttr in msg and msg[messages.epochNumAttr] >= startEpoch and msg[messages.epochNumAttr] <= endEpoch ]
+        testingUtils.checkMessages( self, result.json, expected )
+        
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testGetAllMessages']
     unittest.main()
