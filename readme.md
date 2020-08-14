@@ -6,7 +6,7 @@ LogReader is a component of the ProCemPlus simulation platform. It is a part of 
 
 - get simulations: done 
 - get simulation: done 
-- get messages for simulation: not implemented.
+- get messages for simulation: done (some tests missing)
 - get simple timeseries: Not implemented.
 - get complex timeseries: Not implemented.
 
