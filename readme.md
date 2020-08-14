@@ -61,7 +61,7 @@ This uses the same MongoDB connection information as the main app. This data can
 
     python -m testLogReader.dataManager -d
 
-NOTE: This drops the whole simulations collection before inserting data and when removing test data.
+NOTE: This drops the whole simulations and test message collection before inserting data and when removing test data.
 
 ### Dokcer compose
 
@@ -81,7 +81,7 @@ and test data can be removed with:
 
     docker exec -it logreader python -m testLogReader.dataManager -d
 
-NOTE: This drops the whole simulations collection before inserting data and when removing test data.
+NOTE: This drops the whole simulations and test message collections before inserting data and when removing test data.
 
 The system can be removed with:
 
@@ -113,8 +113,10 @@ The LogReader code is in the LogReader package. The following is a short overvie
 - db: Pakcage for dealing with MongoDB.
     - \_\_init\_\_.py: Initialises the DB connection.
     - simulations.py: Methods for querying simulations from the DB.
+    - messages.py: Methods for querying messages for a simulation run from the DB.
 - controllers: Contains falcon request handler classes.
     - simulations.py: Request handlers related to simulations.
+    - messages.py: Request handlers related to messages.
 
 ### Testing
 
