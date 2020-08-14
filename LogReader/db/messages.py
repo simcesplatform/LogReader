@@ -43,7 +43,7 @@ def getMessages( simId, epoch  = None, startEpoch = None, endEpoch = None, proce
     topic (str): Get messages matching the given topic pattern which can use the * and # wildcard characters used by RabbitMQ.
     Returns a list of dictionaries. None if there is no collection for the messages.
     '''
-    log.debug( f'Get messages for simulation {simId} with parameters epoch: {epoch}, startEpoch: {startEpoch}, endEpoch: {endEpoch}, process: {process}, onlyWarnings: {onlyWarnings},. fromSimDate: {fromSimDate}, toSimDate: {toSimDate} and topic: {topic}.' )
+    log.debug( f'Get messages for simulation {simId} with parameters epoch: {epoch}, startEpoch: {startEpoch}, endEpoch: {endEpoch}, process: {process}, onlyWarnings: {onlyWarnings}, fromSimDate: {fromSimDate}, toSimDate: {toSimDate} and topic: {topic}.' )
     # name of the mongodb collection containing messages for the simulation
     collectionName = _getMessageCollectionName( simId )
     # check if the collection exists at all
