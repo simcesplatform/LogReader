@@ -55,7 +55,8 @@ class TestWebServer(unittest.TestCase):
         cls._port = os.environ.get( 'LOGREADER_PORT', 8080 ) 
         cls._server = ServerThread( api, cls._port )
         cls._server.start() 
-        cls._testData = dataManager.insertTestSimData()
+        cls._testSimData = dataManager.insertTestSimData()
+        cls._testMsgData = dataManager.insertTestMsgData()
         cls._baseURL = f'http://localhost:{cls._port}'
         # test that server is up
         retries = 10 # try retries times to make a test request
@@ -79,6 +80,7 @@ class TestWebServer(unittest.TestCase):
         Remove test data when tests done.
         '''
         dataManager.deleteTestSimData() 
+        dataManager.deleteTestMsgData()
         
     def testGetSimulations(self):
         '''
@@ -86,7 +88,7 @@ class TestWebServer(unittest.TestCase):
         '''
         result = requests.get( self._baseURL +'/simulations' )
         self.assertEqual( result.status_code, 200, 'Incorrect response status.' )
-        testingUtils.checkSimulations(self, result.json(), self._testData )
+        testingUtils.checkSimulations(self, result.json(), self._testSimData )
         
     def testGetSimulationsBetweenDates(self):
         '''
@@ -98,17 +100,25 @@ class TestWebServer(unittest.TestCase):
         result = requests.get( self._baseURL +'/simulations', params = params )
         self.assertEqual( result.status_code, 200 )
         # we should get only the second simulation.
-        testingUtils.checkSimulations(self, result.json(), self._testData[1:2] )
+        testingUtils.checkSimulations(self, result.json(), self._testSimData[1:2] )
         
     def testGetSimulationById(self):
         '''
         Test get simulation by id.
         '''
-        simId = self._testData[0][simIdAttr]
+        simId = self._testSimData[0][simIdAttr]
         result = requests.get( self._baseURL +'/simulations/' +simId )
         self.assertEqual( result.status_code, 200 )
         self.assertEqual( result.json()[simIdAttr], simId )
     
+    def testGetAllMessages(self):
+        '''
+        Test get all messages.
+        '''
+        result = requests.get( f'{self._baseURL}/simulations/{dataManager.testMsgSimId}/messages' )
+        self.assertEqual( result.status_code, 200 )
+        testingUtils.checkMessages( self, result.json(), self._testMsgData )
+
 if __name__ == "__main__":
     # execute tests
     unittest.main()
