@@ -27,7 +27,7 @@ def _getMessageCollectionName( simId ):
     '''
     return collectionNamePrefix +simId
 
-def getMessages( simId, epoch  = None, startEpoch = None, endEpoch = None, process = None, onlyWarnings = False, toSimDate = None, fromSimDate = None ):
+def getMessages( simId, epoch  = None, startEpoch = None, endEpoch = None, process = None, onlyWarnings = False, toSimDate = None, fromSimDate = None, topic = None ):
     '''
     Get messages that match the given parameters.
     simId: Id of the simulation whose messages are fetched.
@@ -38,9 +38,10 @@ def getMessages( simId, epoch  = None, startEpoch = None, endEpoch = None, proce
     onlyWarnings (boolean): If True return only messages which contain warnings. 
     fromSimDate (datetime): Return messages from and after the epoch that contains the given date.
     toSimDate (datetime): Return messages from and before the epoch that contains the given date.
+    topic (str): Get messages matching the given topic pattern which can use the * and # wildcard characters used by RabbitMQ.
     Returns a list of dictionaries. None if there is no collection for the messages.
     '''
-    log.debug( f'Get messages for simulation {simId} with parameters epoch: {epoch}, startEpoch: {startEpoch}, endEpoch: {endEpoch}, process: {process}, onlyWarnings: {onlyWarnings},. fromSimDate: {fromSimDate}, toSimDate: {toSimDate}' )
+    log.debug( f'Get messages for simulation {simId} with parameters epoch: {epoch}, startEpoch: {startEpoch}, endEpoch: {endEpoch}, process: {process}, onlyWarnings: {onlyWarnings},. fromSimDate: {fromSimDate}, toSimDate: {toSimDate} and topic: {topic}.' )
     collectionName = _getMessageCollectionName( simId )
     if len( db.list_collection_names( filter = { 'name': collectionName } ) ) == 0:
         log.debug( f'No collection with name {collectionName}.')
@@ -65,6 +66,9 @@ def getMessages( simId, epoch  = None, startEpoch = None, endEpoch = None, proce
         
     if onlyWarnings == True:
         query[ warningsAttr ] = { '$exists': True }
+        
+    if topic:
+        query[topicAttr] = { '$regex': _topicPatternToRegex( topic ) }
         
     log.debug( f'Getting messages from collection {collectionName} with query: {query}.')    
     result = db[ collectionName ].find( query, { '_id': 0 } )
@@ -113,3 +117,14 @@ def _getEpochsForSimDates( simId, fromSimDate = None, toSimDate = None ):
             pass
         
     return startEpoch, endEpoch
+
+def _topicPatternToRegex( topicPattern ):
+    '''
+    Converts a Rabbitmq style topic pattern which can used the * and # wildcards
+    into a regular expression that can be used to find topics matching the pattern.
+    Returns a string.
+    '''
+    # this code adapted from https://stackoverflow.com/questions/50679145/how-to-match-the-routing-key-with-binding-pattern-for-rabbitmq-topic-exchange-us
+    replaced = topicPattern.replace(r'*', r'([^.]+)').replace(r'#', r'([^.]+.?)+')
+    regexString = f"^{replaced}$"
+    return regexString

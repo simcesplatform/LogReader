@@ -31,7 +31,7 @@
     },
     {
         "SimulationId": "2020-06-03T04:01:52.345Z",
-        "Topic": "energy.production",
+        "Topic": "energy.production.solar",
         "EpochNumber": 1,
         "Type": "Result",
         "Timestamp": { "$date": "2020-06-03T04:01:56Z" },
@@ -78,7 +78,7 @@
     },
     {
         "SimulationId": "2020-06-03T04:01:52.345Z",
-        "Topic": "energy.production",
+        "Topic": "energy.production.solar",
         "EpochNumber": 2,
         "Type": "Result",
         "Timestamp": { "$date": "2020-06-03T04:02:56Z" },
@@ -98,7 +98,7 @@
     },
     {
         "SimulationId": "2020-06-03T04:01:52.345Z",
-        "Topic": "energy.production",
+        "Topic": "energy.production.solar",
         "EpochNumber": 3,
         "Type": "Result",
         "Timestamp": { "$date": "2020-06-03T04:03:56Z" },

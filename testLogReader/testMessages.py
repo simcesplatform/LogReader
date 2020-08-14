@@ -160,5 +160,25 @@ class TestMessages(unittest.TestCase):
         expected = [ msg for msg in self._testData if messages.epochNumAttr in msg and msg[messages.epochNumAttr] >= startEpoch and msg[messages.epochNumAttr] <= endEpoch ]
         testingUtils.checkMessages( self, result, expected )
         
+    def testGetMessagesByTopic(self):
+        '''
+        Test get messages by various topic patterns which use wild card characters.
+        '''
+        # key topic pattern, value list topics it should match from the test messages.
+        topics = {
+            'Epoch': [ 'Epoch' ],
+            'weather.*': [ 'weather.current', 'weather.forecast' ],
+            '*.current': [ 'weather.current' ],
+            'energy.*.solar': [ 'energy.production.solar' ],
+            'energy.#': [ 'energy.production.solar' ],
+            '#.solar': [ 'energy.production.solar' ]
+        }
+        
+        for topic in topics:
+            with self.subTest( topic = topic ):
+                result = messages.getMessages( dataManager.testMsgSimId, topic = topic )
+                expected = [ msg for msg in self._testData if msg[messages.topicAttr] in topics[topic] ]
+                testingUtils.checkMessages( self, result, expected )
+        
 if __name__ == "__main__":
     unittest.main()

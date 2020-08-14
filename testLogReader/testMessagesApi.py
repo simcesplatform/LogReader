@@ -105,6 +105,17 @@ class TestMessagesApi( testingUtils.ApiTest ):
         expected = [ msg for msg in self._testData if messages.epochNumAttr in msg and msg[messages.epochNumAttr] >= startEpoch and msg[messages.epochNumAttr] <= endEpoch ]
         testingUtils.checkMessages( self, result.json, expected )
         
+    def testGetMessagesByTopic(self):
+        '''
+        Test get messages by topic.
+        '''
+        topicPattern = 'energy.#'
+        # topics we expect the topic pattern to match in test data
+        topics = [ 'energy.production.solar', ]
+        result = self.simulate_get( path, params = { 'topic': topicPattern } )
+        expected = [ msg for msg in self._testData if msg[messages.topicAttr] in topics ]
+        testingUtils.checkMessages( self, result.json, expected )
+        
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testGetAllMessages']
     unittest.main()
