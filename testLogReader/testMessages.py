@@ -15,10 +15,12 @@ class TestMessages(unittest.TestCase):
     
     @classmethod
     def setUpClass(cls):
+        # insert test data before tests are executed
         cls._testData = dataManager.insertTestMsgData()
     
     @classmethod
     def tearDownClass(cls):
+        # after tests are executed delete test messages
         dataManager.deleteTestMsgData()
 
     def setUp(self):
@@ -27,7 +29,6 @@ class TestMessages(unittest.TestCase):
 
     def tearDown(self):
         pass
-
 
     def testGetAllMessages(self):
         '''
@@ -164,7 +165,7 @@ class TestMessages(unittest.TestCase):
         '''
         Test get messages by various topic patterns which use wild card characters.
         '''
-        # key topic pattern, value list topics it should match from the test messages.
+        # key topic pattern, value list of topics it should match from the test messages.
         topics = {
             'Epoch': [ 'Epoch' ],
             'weather.*': [ 'weather.current', 'weather.forecast' ],

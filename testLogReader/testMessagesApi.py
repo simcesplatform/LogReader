@@ -62,8 +62,6 @@ class TestMessagesApi( testingUtils.ApiTest ):
         result = self.simulate_get( path, params = params )
         expected = [ msg for msg in self._testData if messages.epochNumAttr in msg and msg[messages.epochNumAttr] >= start and msg[messages.epochNumAttr] <= end ]
         testingUtils.checkMessages( self, result.json, expected )
-    
-        
         
     def testGetMessagesByInvalidEpoch(self):
         '''

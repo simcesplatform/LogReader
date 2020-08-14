@@ -9,6 +9,7 @@ import pymongo
 
 from LogReader.db import db
 
+# message attribute names
 epochNumAttr = 'EpochNumber'
 processAttr = 'SourceProcessId'
 warningsAttr = 'Warnings'
@@ -19,6 +20,7 @@ epochTopic = 'Epoch'
 
 log = logging.getLogger( __name__ )
 
+# all simulation message collection names start with the same string
 collectionNamePrefix = 'simulation_'
 
 def _getMessageCollectionName( simId ): 
@@ -29,9 +31,9 @@ def _getMessageCollectionName( simId ):
 
 def getMessages( simId, epoch  = None, startEpoch = None, endEpoch = None, process = None, onlyWarnings = False, toSimDate = None, fromSimDate = None, topic = None ):
     '''
-    Get messages that match the given parameters.
-    simId: Id of the simulation whose messages are fetched.
-    epoch (int): Return messages from the given epoch.  
+    Get messages that match the given parameters from a simulation run.
+    simId (str): Id of the simulation whose messages are fetched.
+    epoch (integer): Return messages from the given epoch.  
     startEpoch (integer): Return messages from and after the given epoch.
     endEpoch (integer): Return messages from and before the given epoch.
     process (list): List of source process ids. Returns messages whose source process id is in the list.
@@ -42,16 +44,20 @@ def getMessages( simId, epoch  = None, startEpoch = None, endEpoch = None, proce
     Returns a list of dictionaries. None if there is no collection for the messages.
     '''
     log.debug( f'Get messages for simulation {simId} with parameters epoch: {epoch}, startEpoch: {startEpoch}, endEpoch: {endEpoch}, process: {process}, onlyWarnings: {onlyWarnings},. fromSimDate: {fromSimDate}, toSimDate: {toSimDate} and topic: {topic}.' )
+    # name of the mongodb collection containing messages for the simulation
     collectionName = _getMessageCollectionName( simId )
+    # check if the collection exists at all
     if len( db.list_collection_names( filter = { 'name': collectionName } ) ) == 0:
         log.debug( f'No collection with name {collectionName}.')
         return None
     
-    query = {}
+    query = {} # build the message query here
     if fromSimDate or toSimDate:
+        # get the number of the first and last epochs that contain the sim dates.
         startEpoch, endEpoch = _getEpochsForSimDates( simId, fromSimDate, toSimDate )
         epoch = None # This is not relevant with these parameters.
-        
+
+    # check if there is filtering by epoch number either from the method parameters or above from from and to sim dates
     if epoch != None:
         query[epochNumAttr] = epoch
     
@@ -59,18 +65,24 @@ def getMessages( simId, epoch  = None, startEpoch = None, endEpoch = None, proce
         query[epochNumAttr] = { '$gte': startEpoch }
         
     if endEpoch != None:
+        # there may already be something in query for epoch number
         query.setdefault( epochNumAttr, {} )['$lte'] = endEpoch
     
+    # see if there is list of source process ids for filtering the messages
     if process:
         query[ processAttr ] = { '$in': process }
-        
+    
+    # should only messages with warnings be fetched    
     if onlyWarnings == True:
         query[ warningsAttr ] = { '$exists': True }
-        
+    
+    # if there is filtering by topic convert the AMQP type topic pattern into a regular expression
+    # which can be used in a MongoDb query    
     if topic:
         query[topicAttr] = { '$regex': _topicPatternToRegex( topic ) }
         
     log.debug( f'Getting messages from collection {collectionName} with query: {query}.')    
+    # get all attributes except mongodb id
     result = db[ collectionName ].find( query, { '_id': 0 } )
     return list( result ) 
 

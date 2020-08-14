@@ -27,6 +27,9 @@ def checkSimulations( test, resultSims, expectedSims ):
     checkItemsById( test, simIdAttr, resultSims, expectedSims )
     
 def checkMessages( test, resultMsgs, expectedMsgs ):
+    '''
+    Check by message id that the list of result simulations matches with the list of expected simulations.
+    '''
     checkItemsById( test, 'MessageId', resultMsgs, expectedMsgs )
     
 def checkItemsById( test, idAttr, result, expected ):

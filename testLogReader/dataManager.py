@@ -52,10 +52,10 @@ def insertTestMsgData():
     '''
     Inserts test messages to db.
     '''
-    return insertDataFromFile( 'messages1.json', messages.collectionNamePrefix +testMsgSimId )
+    return insertDataFromFile( 'messages1.json', messages._getMessageCollectionName( testMsgSimId ))
 
 def deleteTestMsgData():
-    db[messages.collectionNamePrefix +testMsgSimId ].drop()
+    db[messages._getMessageCollectionName( testMsgSimId ) ].drop()
 
 if __name__ == '__main__':
     # insert or delete the test data

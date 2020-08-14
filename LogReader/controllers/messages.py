@@ -22,7 +22,8 @@ class MsgController(object):
         messageStore: Module with method for getting messages.
         '''
         self._messageStore = messageStore
-        
+    
+    # use a before hook to get, validate and convert fromSimDate and toSimDate parameters.    
     @falcon.before( utils.processDateParams, 'fromSimDate', 'toSimDate' )
     def on_get(self, req, resp, simId, fromSimDate = None, toSimDate = None ):
         '''
@@ -39,11 +40,15 @@ class MsgController(object):
         process = req.get_param( 'process' )
         if process:
             process = process.split( ',' )
-            
+        
+        # get onlyWarnings parameter and convert to bool    
         onlyWarnings = req.get_param_as_bool( 'onlyWarnings', default = False )
+        # get topic parameter
         topic = req.get_param( 'topic' )
         
+        # get the messages
         result = self._messageStore.getMessages( simId, epoch = epoch, startEpoch = startEpoch, endEpoch = endEpoch, process = process, onlyWarnings = onlyWarnings, fromSimDate = fromSimDate, toSimDate = toSimDate, topic = topic )
+        # result None means that there is no simulation with the id (no corresponding mongodb collection for the messages)
         if result == None:
             raise falcon.HTTPNotFound( title = 'Simulation not found.', description = f'Simulation with id {simId} not found.' )
         
