@@ -23,14 +23,14 @@ class MsgController(object):
         '''
         self._messageStore = messageStore
     
-    # use a before hook to get, validate and convert fromSimDate and toSimDate parameters.    
-    @falcon.before( utils.processDateParams, 'fromSimDate', 'toSimDate' )
-    def on_get(self, req, resp, simId, fromSimDate = None, toSimDate = None ):
+    def on_get(self, req, resp, simId ):
         '''
         Get messages for simulation:
         simId: Simulation id from the URL path.
         '''
         log.debug( f'Get messages for simulation with id {simId} with parameters {req.params}.' )
+        # process and validate possible fromSimDate and toSimDate date parameters  
+        fromSimDate, toSimDate = utils.processDateParams( req.params, 'fromSimDate', 'toSimDate' )
         # Get possible epoch filtering parameters and check that they are integers.
         epoch = utils.paramToInt( 'epoch', req )
         startEpoch = utils.paramToInt( 'startEpoch', req )

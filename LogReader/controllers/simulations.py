@@ -5,7 +5,6 @@ Processors for requests related to simulations.
 
 import logging
 
-import dateutil.parser
 import falcon
 
 import LogReader.utils
@@ -25,13 +24,13 @@ class SimController:
         '''
         self._simulationStore = simulationStore
         
-    @falcon.before( LogReader.utils.processDateParams, 'fromDate', 'toDate' )
-    def on_get_simulations( self, req, resp, toDate = None, fromDate = None  ):
+    def on_get_simulations( self, req, resp ):
         '''
         Process request for getting list of simulations.
-        The LogReader.utils.processDateParams is used as a falcon before hook to convert fromDate and toDate query parameters to datetime objects.
         '''
         log.debug( f'Got request for  simulations with parameters: {req.params}.' )
+        # process and validate possible fromDate and toDate date parameters
+        fromDate, toDate = LogReader.utils.processDateParams( req.params, 'fromDate', 'toDate' ) 
         
         results = self._simulationStore.getSimulations( fromDate, toDate )
         resp.media = results
