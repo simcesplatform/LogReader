@@ -12,6 +12,7 @@ import requests
 from testLogReader import dataManager, testingUtils
 from LogReader.app import api
 from LogReader.db.simulations import simIdAttr
+from LogReader.db import messages
 
 class ServerThread(threading.Thread):
     '''
@@ -118,6 +119,24 @@ class TestWebServer(unittest.TestCase):
         result = requests.get( f'{self._baseURL}/simulations/{dataManager.testMsgSimId}/messages' )
         self.assertEqual( result.status_code, 200 )
         testingUtils.checkMessages( self, result.json(), self._testMsgData )
+        
+    def testGetWarningMessagesBetweenSimDatesByTopic(self):
+        '''
+        Test get messages with multiple parameters.
+        Get warning messages between given simulation dates from the given topic.
+        '''
+        fromSimDate = "2020-06-03T14:00:00Z"
+        toSimDate = "2020-06-03T16:00:00Z"
+        topic = 'energy.#'
+        expectedTopics = [ 'energy.production.solar' ]
+        result = requests.get( f'{self._baseURL}/simulations/{dataManager.testMsgSimId}/messages', params = { 'fromSimDate': fromSimDate, 'toSimDate': toSimDate, 'topic': topic, 'onlyWarnings': 'true' } )
+        # we expect messages starting from epoch 2 and ending with epoch 3
+        startEpoch = 2
+        endEpoch = 3
+        expected = [ msg for msg in self._testMsgData if messages.epochNumAttr in msg and msg[messages.epochNumAttr] >= startEpoch and msg[messages.epochNumAttr] <= endEpoch and msg[messages.topicAttr] in expectedTopics and messages.warningsAttr in msg ]
+        self.assertEqual( result.status_code, 200 )
+        testingUtils.checkMessages( self, result.json(), expected )
+        
 
 if __name__ == "__main__":
     # execute tests

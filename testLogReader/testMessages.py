@@ -171,6 +171,8 @@ class TestMessages(unittest.TestCase):
             'weather.*': [ 'weather.current', 'weather.forecast' ],
             '*.current': [ 'weather.current' ],
             'energy.*.solar': [ 'energy.production.solar' ],
+            '*.production.*': [ 'energy.production.solar' ],
+            'energy.*': [],
             'energy.#': [ 'energy.production.solar' ],
             '#.solar': [ 'energy.production.solar' ]
         }
@@ -180,6 +182,41 @@ class TestMessages(unittest.TestCase):
                 result = messages.getMessages( dataManager.testMsgSimId, topic = topic )
                 expected = [ msg for msg in self._testData if msg[messages.topicAttr] in topics[topic] ]
                 testingUtils.checkMessages( self, result, expected )
+                
+    def testGetMessagesByBetweeenEpochsAndProcessIds(self):
+        '''
+        Test getting messages with multiple parameters.
+        Get messages from given processes send between given epochs. 
+        '''
+        startEpoch = 2
+        endEpoch = 3
+        processes = [ 'weatherDivinity', 'solarPlant1' ]
+        result = messages.getMessages( dataManager.testMsgSimId, startEpoch = startEpoch, endEpoch = endEpoch, process = processes )
+        expected = [ msg for msg in self._testData if msg[messages.processAttr] in processes and msg[messages.epochNumAttr] >= startEpoch and msg[messages.epochNumAttr] <= endEpoch ] 
+        testingUtils.checkMessages( self, result, expected )
+        
+    def testGetMessagesByToSimDateAndTopic(self):
+        '''
+        Test getting messages with multiple parameters.
+        Get messages posted to given topics before the given simulation date.
+        '''
+        toSimDate = dateutil.parser.isoparse( "2020-06-03T15:00:00Z" ) # end of epoch 2
+        endEpoch = 2
+        topic = 'energy.#'
+        expectedTopics = [ 'energy.production.solar' ]
+        result = messages.getMessages( dataManager.testMsgSimId, toSimDate = toSimDate, topic = topic )
+        expected = [ msg for msg in self._testData if msg[messages.topicAttr] in expectedTopics and msg[messages.epochNumAttr] <= endEpoch  ] 
+        testingUtils.checkMessages( self, result, expected )
+        
+    def testGetWarningMessagesFromEpoch(self):
+        '''
+        Test get messages with multiple  parameters.
+        Get messages containing warnings from the given epoch.
+        '''
+        epoch = 3
+        result = messages.getMessages( dataManager.testMsgSimId, epoch = epoch, onlyWarnings = True )
+        expected = [ msg for msg in self._testData if messages.warningsAttr in msg and msg[messages.epochNumAttr] == epoch  ] 
+        testingUtils.checkMessages( self, result, expected )
         
 if __name__ == "__main__":
     unittest.main()

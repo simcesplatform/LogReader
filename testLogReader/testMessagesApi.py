@@ -114,6 +114,41 @@ class TestMessagesApi( testingUtils.ApiTest ):
         expected = [ msg for msg in self._testData if msg[messages.topicAttr] in topics ]
         testingUtils.checkMessages( self, result.json, expected )
         
+    def testGetMessagesByBetweeenEpochsAndProcessIds(self):
+        '''
+        Test getting messages with multiple parameters.
+        Get messages from given processes send between given epochs. 
+        '''
+        startEpoch = 2
+        endEpoch = 3
+        processes = 'weatherDivinity,solarPlant1'
+        result = self.simulate_get( path, params = { 'process': processes, 'startEpoch': startEpoch, 'endEpoch': endEpoch }) 
+        expected = [ msg for msg in self._testData if msg[messages.processAttr] in processes and msg[messages.epochNumAttr] >= startEpoch and msg[messages.epochNumAttr] <= endEpoch ] 
+        testingUtils.checkMessages( self, result.json, expected )
+        
+    def testGetMessagesByToSimDateAndTopic(self):
+        '''
+        Test getting messages with multiple parameters.
+        Get messages posted to given topics before the given simulation date.
+        '''
+        toSimDate = "2020-06-03T15:00:00Z" # end of epoch 2
+        endEpoch = 2
+        topic = 'energy.#'
+        expectedTopics = [ 'energy.production.solar' ]
+        result = self.simulate_get( path, params = { 'toSimDate': toSimDate, 'topic': topic }) 
+        expected = [ msg for msg in self._testData if msg[messages.topicAttr] in expectedTopics and msg[messages.epochNumAttr] <= endEpoch  ] 
+        testingUtils.checkMessages( self, result.json, expected )
+        
+    def testGetWarningMessagesFromEpoch(self):
+        '''
+        Test get messages with multiple  parameters.
+        Get messages containing warnings from the given epoch.
+        '''
+        epoch = 3
+        result = self.simulate_get( path, params = { 'epoch': 3, 'onlyWarnings': 'true' })
+        expected = [ msg for msg in self._testData if messages.warningsAttr in msg and msg[messages.epochNumAttr] == epoch  ] 
+        testingUtils.checkMessages( self, result.json, expected )
+    
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testGetAllMessages']
     unittest.main()
