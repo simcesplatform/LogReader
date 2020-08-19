@@ -60,9 +60,10 @@ def getMessagesWithParams( messageStore, simId, params ):
     onlyWarnings = params.get( 'onlyWarnings', False )
     if onlyWarnings and type( onlyWarnings ) != bool:
         conversion = { 'true': True, 'false': False }
-        onlyWarnings = conversion.get(onlyWarnings)
+        try:
+            onlyWarnings = conversion[onlyWarnings]
             
-        if onlyWarnings == None:
+        except KeyError:
             raise falcon.HTTPBadRequest( title = 'Invalid value for onlyWarnings.', description = f'Value should be true or false but it was {onlyWarnings}.' )
         
     # get topic parameter
