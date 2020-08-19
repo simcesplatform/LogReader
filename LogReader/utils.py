@@ -41,14 +41,15 @@ def processDateParams( params, fromDateParam, toDateParam ):
         
     return fromDate, toDate 
         
-def paramToInt( paramName, req ):
+def paramToInt( paramName, params ):
     '''
-    Convert a query parameter from given request to integer. Raises BadRequest if the value cannot be converted into an integer.
-    paramName (str): Name of a query parameter whose value should be an integer.
-    req: A falcon HTTP request that has the query parameter.
+    Convert value from given dictionary to int if present.
+    paramName (str): Dictionary key whose value should be an integer. 
+    params: A dictionary that should contain the integer. 
     Returns the parameter value as an integer or None if the request does not have a value for the parameter.
+    Raises falcon.HTTPBadRequest if the value is not a valid integer.
     '''
-    param = req.get_param( paramName )
+    param = params.get( paramName )
     if param:
         try:
             param = int( param )
