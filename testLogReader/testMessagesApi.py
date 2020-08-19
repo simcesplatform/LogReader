@@ -90,6 +90,13 @@ class TestMessagesApi( testingUtils.ApiTest ):
         expected = [ msg for msg in self._testData if messages.warningsAttr in msg ]
         testingUtils.checkMessages( self, result.json, expected )
         
+    def testGetMessagesInvalidOnlyWarnings(self):
+        '''
+        Test that invalid onlyWarning is handled correctly.
+        '''
+        result = self.simulate_get( path, params = { 'onlyWarnings': 'foo' } )
+        self.assertEqual( result.status_code, 400 )
+        
     def testGetMessagesBetweenSimDate( self ):
         '''
         Get messages between epochs  that contain the given simulation dates.
