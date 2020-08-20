@@ -40,6 +40,52 @@
     },
     {
         "SimulationId": "2020-06-03T04:01:52.345Z",
+        "Topic": "energy.storage.state",
+        "EpochNumber": 1,
+        "Type": "Result",
+        "Timestamp": { "$date": "2020-06-03T04:01:56Z" },
+        "SourceProcessId": "battery1",
+        "MessageId": "batter1-1",
+        "batteryState": {
+            "StartTime": "2020-06-03T13:00:00Z",
+            "Interval": "PT30M",
+            "Series": {
+                "chargePercentage": {
+                    "UnitOfMeasure": "%",
+                    "Values": [ 90, 88 ]
+                },
+                "capacity": {
+                    "UnitOfMeasure": "x",
+                    "Values": [ 300, 280 ]
+                }
+            }
+        }
+    },
+    {
+        "SimulationId": "2020-06-03T04:01:52.345Z",
+        "Topic": "energy.storage.state",
+        "EpochNumber": 1,
+        "Type": "Result",
+        "Timestamp": { "$date": "2020-06-03T04:01:58Z" },
+        "SourceProcessId": "battery2",
+        "MessageId": "batter2-1",
+        "batteryState": {
+            "StartTime": "2020-06-03T13:00:00Z",
+            "Interval": "PT30M",
+            "Series": {
+                "chargePercentage": {
+                    "UnitOfMeasure": "%",
+                    "Values": [ 40, 42 ]
+                },
+                "capacity": {
+                    "UnitOfMeasure": "x",
+                    "Values": [ 100, 130 ]
+                }
+            }
+        }
+    },
+    {
+        "SimulationId": "2020-06-03T04:01:52.345Z",
         "Topic": "weather.forecast",
         "EpochNumber": 1,
         "Type": "Forecast",

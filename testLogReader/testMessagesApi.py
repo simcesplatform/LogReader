@@ -116,7 +116,7 @@ class TestMessagesApi( testingUtils.ApiTest ):
         '''
         topicPattern = 'energy.#'
         # topics we expect the topic pattern to match in test data
-        topics = [ 'energy.production.solar', ]
+        topics = [ 'energy.production.solar', 'energy.storage.state' ]
         result = self.simulate_get( path, params = { 'topic': topicPattern } )
         expected = [ msg for msg in self._testData if msg[messages.topicAttr] in topics ]
         testingUtils.checkMessages( self, result.json, expected )
@@ -141,7 +141,7 @@ class TestMessagesApi( testingUtils.ApiTest ):
         toSimDate = "2020-06-03T15:00:00Z" # end of epoch 2
         endEpoch = 2
         topic = 'energy.#'
-        expectedTopics = [ 'energy.production.solar' ]
+        expectedTopics = [ 'energy.production.solar', 'energy.storage.state' ]
         result = self.simulate_get( path, params = { 'toSimDate': toSimDate, 'topic': topic }) 
         expected = [ msg for msg in self._testData if msg[messages.topicAttr] in expectedTopics and msg[messages.epochNumAttr] <= endEpoch  ] 
         testingUtils.checkMessages( self, result.json, expected )

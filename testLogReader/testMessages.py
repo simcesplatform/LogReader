@@ -173,7 +173,7 @@ class TestMessages(unittest.TestCase):
             'energy.*.solar': [ 'energy.production.solar' ],
             '*.production.*': [ 'energy.production.solar' ],
             'energy.*': [],
-            'energy.#': [ 'energy.production.solar' ],
+            'energy.#': [ 'energy.production.solar', 'energy.storage.state' ],
             '#.solar': [ 'energy.production.solar' ]
         }
         
@@ -203,7 +203,7 @@ class TestMessages(unittest.TestCase):
         toSimDate = dateutil.parser.isoparse( "2020-06-03T15:00:00Z" ) # end of epoch 2
         endEpoch = 2
         topic = 'energy.#'
-        expectedTopics = [ 'energy.production.solar' ]
+        expectedTopics = [ 'energy.production.solar', 'energy.storage.state' ]
         result = messages.getMessages( dataManager.testMsgSimId, toSimDate = toSimDate, topic = topic )
         expected = [ msg for msg in self._testData if msg[messages.topicAttr] in expectedTopics and msg[messages.epochNumAttr] <= endEpoch  ] 
         testingUtils.checkMessages( self, result, expected )
