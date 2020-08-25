@@ -17,6 +17,7 @@ epochStartAttr = 'StartTime'
 epochEndAttr = 'EndTime'
 topicAttr = 'Topic'
 epochTopic = 'Epoch'
+idAttr = 'MessageId'
 
 log = logging.getLogger( __name__ )
 

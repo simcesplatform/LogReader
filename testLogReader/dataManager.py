@@ -20,15 +20,22 @@ testDataDir = pathlib.Path(__file__).parent.absolute() / 'data'
 # id of simulation for which there are test messages.
 testMsgSimId = '2020-06-03T04:01:52.345Z'
 
+def readJsonFile( fileName ):
+    '''
+    Read the given file from test data directory as JSON.
+    '''
+    with( open( testDataDir / fileName, 'r' )) as data:
+        # json_util is used to parse the mongodb extended JSON data correctly mainly  dates to python datetime objects
+        data = json.load(data, object_hook=json_util.object_hook)
+        
+    return data
+    
 def insertDataFromFile( fileName, collectionName ):
     '''
     Inserts data from a file from the test data directory whose name is given to the given collection.
     Returns a dict containing the test data.
     '''
-    with( open( testDataDir / fileName, 'r' )) as data:
-        # json_util is used to parse the mongodb extended JSON data correctly mainly  dates to python datetime objects
-        testItems = json.load(data, object_hook=json_util.object_hook)
-            
+    testItems = readJsonFile( fileName )
     # ensure collection is empty before adding data.
     collection = db[collectionName]
     collection.drop()
