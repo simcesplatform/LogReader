@@ -79,7 +79,7 @@ class TimeSeries(object):
                         attrParent = processData
                         prevValue = msg
                         foundTimeSeries = False
-                        for i in range( 0, len(attr) -1):
+                        for i in range( 0, len(attr)):
                             part = attr[i]
                             value = prevValue.get(part)
                             if value == None:
