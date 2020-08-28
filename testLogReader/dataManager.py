@@ -20,6 +20,10 @@ testDataDir = pathlib.Path(__file__).parent.absolute() / 'data'
 # id of simulation for which there are test messages.
 testMsgSimId = '2020-06-03T04:01:52.345Z'
 
+def writeJsonFile( fileName, data ):
+    with open( testDataDir / fileName, 'w' ) as file:
+        json.dump( data, file, indent = 3 )
+
 def readJsonFile( fileName ):
     '''
     Read the given file from test data directory as JSON.

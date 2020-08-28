@@ -62,12 +62,20 @@ class TimeSeries(object):
         self._result = { 'TimeIndex': [] }
         
     def createTimeSeries(self):
-        while self._dataRemaining:
+        while self._findNextEpoch():
             self._getEpochData()
             
+    def _findNextEpoch(self):
+        nextEpochs = [ tsMsgs.getNextEpochNumber() for tsMsgs in self._data if tsMsgs.getNextEpochNumber() != None ]
+        if len( nextEpochs ) == 0:
+            self._nextEpoch = None
+            return False
+        
+        self._nextEpoch = min( nextEpochs )
+        return True
+
     def _getEpochData(self):
-        nextEpoch = min( [ tsMsgs.getNextEpochNumber() for tsMsgs in self._data ])
-        epochData = [ tsMsgs for tsMsgs in self._data if nextEpoch == tsMsgs.getNextEpochNumber() ]
+        epochData = [ tsMsgs for tsMsgs in self._data if self._nextEpoch == tsMsgs.getNextEpochNumber() ]
         self._epochResult = []
         
         for tsMsgs in epochData:

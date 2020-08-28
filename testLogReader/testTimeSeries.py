@@ -6,6 +6,7 @@ Created on 25.8.2020
 import unittest
 import pprint
 import functools
+import copy
 
 from LogReader.db import messages
 from LogReader.services import timeSeries
@@ -22,14 +23,14 @@ testScenarios = [
          'attrs': [ batteryStateAttr ]}
      ],
      'testGetMessagesForNextEpoch': [[ 1, 2 ]],
-     'testGetEpochData': '' },
+     'testGetEpochData': True },
     { 'name': 'charge percentage from battery 1 and 2',
      'timeSeriesParams': [ 
          {'msgIds': batteryMsgIds,
          'attrs': [ chargePercentageAttr ],}
      ],
      'testGetMessagesForNextEpoch': [[ 1, 2 ]],
-     'testGetEpochData': '' }
+     'testGetEpochData': True }
 ]
 
 def testWithAllScenarios( testName ):
@@ -42,10 +43,21 @@ def testWithAllScenarios( testName ):
                     continue
                 
                 with testInstance.subTest( scenario = scenario['name'] ):
+                    testInstance._store = None
                     test( testInstance, timeSeries, expected )
+                    if testInstance._store != None:
+                        fileName = _getTestDataResultFileName( testName, scenario['name'], True )
+                        dataManager.writeJsonFile( fileName, testInstance._store )
                 
         return wrapper
     return decorator
+
+def _getTestDataResultFileName( testName, scenarioName, actual = False ):
+    result = 'result'
+    if actual:
+        result = 'actual_result'
+    scenarioName = scenarioName.replace( ' ', '_' )
+    return f'{testName}_{scenarioName}_{result}.json'
                 
 class TestTimeSeries(unittest.TestCase):
     
@@ -81,10 +93,17 @@ class TestTimeSeries(unittest.TestCase):
 
     @testWithAllScenarios( 'testGetEpochData' )
     def testGetEpochData(self, timeSeries, expected):
-        timeSeries._getEpochData()
-        timeSeries._getEpochData()
-        #pprint.pprint( timeSeries._result )
-        #pprint.pprint( timeSeries._epochResult )
+        self._store = { 'result': [], 'epochResult': [] }
+        index = 0
+        while timeSeries._findNextEpoch(): 
+            timeSeries._getEpochData()
+            #pprint.pprint( timeSeries._result )
+            #pprint.pprint( timeSeries._epochResult )
+            self.assertEqual( timeSeries._result, expected['result'][index] )
+            self.assertEqual( timeSeries._epochResult, expected['epochResult'][index] )
+            index += 1
+            self._store['result'].append( copy.deepcopy(timeSeries._result) )
+            self._store['epochResult'].append( copy.deepcopy(timeSeries._epochResult) ) 
     
     def _getTestData1(self):
         msgs = self._getMessagesForIds( batteryMsgIds )
@@ -94,7 +113,11 @@ class TestTimeSeries(unittest.TestCase):
     @classmethod
     def getTestData(cls, scenario, testName ):
         tsMsgsLst = [ timeSeries.TimeSeriesMessages( params['attrs'],  cls._getMessagesForIds( params['msgIds'] ) ) for params in scenario['timeSeriesParams'] ]   
-        return timeSeries.TimeSeries( tsMsgsLst ), scenario.get(testName)
+        expected = scenario[testName]
+        if expected == True:
+            fileName = _getTestDataResultFileName( testName, scenario['name'] )
+            expected = dataManager.readJsonFile( fileName )
+        return timeSeries.TimeSeries( tsMsgsLst ), expected
         
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testGetMessagesForNextEpoch']
