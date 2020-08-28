@@ -82,7 +82,9 @@ class TestTimeSeries(unittest.TestCase):
     @testWithAllScenarios( 'testGetEpochData' )
     def testGetEpochData(self, timeSeries, expected):
         timeSeries._getEpochData()
-        pprint.pprint( timeSeries._result )
+        timeSeries._getEpochData()
+        #pprint.pprint( timeSeries._result )
+        #pprint.pprint( timeSeries._epochResult )
     
     def _getTestData1(self):
         msgs = self._getMessagesForIds( batteryMsgIds )

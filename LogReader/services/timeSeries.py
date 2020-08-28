@@ -8,8 +8,7 @@ from LogReader.db import messages
 
 seriesAttr = 'Series'
 seriesValueAttr = 'Values'
-seriesTimeAttr = 'StartTime'
-seriesIntervalAttr = 'Interval'
+timeIndexAttr = 'TimeIndex'
 
 class TimeSeriesMessages():
     
@@ -69,6 +68,7 @@ class TimeSeries(object):
     def _getEpochData(self):
         nextEpoch = min( [ tsMsgs.getNextEpochNumber() for tsMsgs in self._data ])
         epochData = [ tsMsgs for tsMsgs in self._data if nextEpoch == tsMsgs.getNextEpochNumber() ]
+        self._epochResult = []
         
         for tsMsgs in epochData:
                 for msg in tsMsgs.getNextEpochMsgs(): 
@@ -93,16 +93,17 @@ class TimeSeries(object):
                                 break
                             
                         if foundTimeSeries:
+                            self._epochResult.append( attrParent )
+                            attrParent['index'] = 0
+                            attrParent['timeIndex'] = prevValue[timeIndexAttr] 
                             series = prevValue[seriesAttr]
                             if i == len( attr ) -1:
                                 for key in series:
                                     resultSeries = attrParent.setdefault( key, { 'values': [] })
-                                    resultSeries['index'] = 0
                                     resultSeries['source'] = series[key][ seriesValueAttr ] 
                             
                             else:
                                 resultSeries = attrParent.setdefault( attr[-1], { 'values': [] })
-                                resultSeries['index'] = 0
                                 resultSeries['source'] = series[attr[-1]][ seriesValueAttr ] 
 
 def _isTimeSeries(value):
