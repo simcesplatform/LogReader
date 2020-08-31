@@ -39,18 +39,17 @@ def testWithAllScenarios( testName ):
     def decorator(test):
         @functools.wraps(test)
         def wrapper(testInstance):
+            testInstance._testName = testName
+            testInstance._results = {}
             for scenario in testScenarios:
                 timeSeries, expected = TestTimeSeries.getTestData( scenario, testName )
                 if expected == None:
                     continue
                 
+                testInstance._scenarioName = scenario['name']
                 with testInstance.subTest( scenario = scenario['name'] ):
-                    testInstance._store = None
                     test( testInstance, timeSeries, expected )
-                    if testInstance._store != None:
-                        fileName = _getTestDataResultFileName( testName, scenario['name'], True )
-                        dataManager.writeJsonFile( fileName, testInstance._store )
-                
+                        
         return wrapper
     return decorator
 
@@ -73,7 +72,9 @@ class TestTimeSeries(unittest.TestCase):
 
 
     def tearDown(self):
-        pass
+        for scenarioName in self._results:
+            fileName = _getTestDataResultFileName( self._testName, scenarioName, True )
+            dataManager.writeJsonFile( fileName, self._results[scenarioName] )
 
     @classmethod
     def _getMessagesForIds(cls, msgIds ):
@@ -95,22 +96,24 @@ class TestTimeSeries(unittest.TestCase):
 
     @testWithAllScenarios( 'testGetEpochData' )
     def testGetEpochData(self, timeSeries, expected):
-        self._store = { 'result': [], 'epochResult': [] }
+        results = { 'result': [], 'epochResult': [] }
+        self._results[self._scenarioName] = results
         index = 0
         while timeSeries._findNextEpoch(): 
             timeSeries._getEpochData()
             #pprint.pprint( timeSeries._result )
             #pprint.pprint( timeSeries._epochResult )
+            results['result'].append( copy.deepcopy(timeSeries._result) )
+            results['epochResult'].append( copy.deepcopy(timeSeries._epochResult) )
             self.assertEqual( timeSeries._result, expected['result'][index] )
             self.assertEqual( timeSeries._epochResult, expected['epochResult'][index] )
             index += 1
-            self._store['result'].append( copy.deepcopy(timeSeries._result) )
-            self._store['epochResult'].append( copy.deepcopy(timeSeries._epochResult) ) 
+             
     
     @testWithAllScenarios( 'testCreateTimeSeries' )        
     def testCreateTimeSeries(self, timeSeries, expected ):
         timeSeries.createTimeSeries()
-        self._store = timeSeries._result
+        self._results[self._scenarioName] = timeSeries._result
         self.assertEqual( timeSeries._result, expected )
     
     def _getTestData1(self):
