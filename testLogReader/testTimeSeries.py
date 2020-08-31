@@ -24,7 +24,7 @@ testScenarios = [
      ],
      'testGetMessagesForNextEpoch': [[ 1, 2 ]],
      'testGetEpochData': True,
-     'testCreateTimeSeries': '' },
+     'testCreateTimeSeries': True },
     { 'name': 'charge percentage from battery 1 and 2',
      'timeSeriesParams': [ 
          {'msgIds': batteryMsgIds,
@@ -32,7 +32,7 @@ testScenarios = [
      ],
      'testGetMessagesForNextEpoch': [[ 1, 2 ]],
      'testGetEpochData': True,
-    'testCreateTimeSeries': '' } 
+    'testCreateTimeSeries': True } 
 ]
 
 def testWithAllScenarios( testName ):
@@ -111,6 +111,7 @@ class TestTimeSeries(unittest.TestCase):
     def testCreateTimeSeries(self, timeSeries, expected ):
         timeSeries.createTimeSeries()
         self._store = timeSeries._result
+        self.assertEqual( timeSeries._result, expected )
     
     def _getTestData1(self):
         msgs = self._getMessagesForIds( batteryMsgIds )

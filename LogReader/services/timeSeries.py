@@ -132,8 +132,35 @@ class TimeSeries(object):
                 if missing > 0:
                     values.extend( missing *[ None ] )
         
-        #nextTime = min( dateutil.)
-    
+        while True:
+            nextTimes = [ item['timeIndex'][ item['index'] ] for item in self._epochResult if item['index'] != None ]
+            if len( nextTimes ) == 0:
+                break 
+            
+            nextTime = min( nextTimes )
+            timeIndex.append( { 'epoch': self._nextEpoch, 'timestamp': nextTime })
+            for item in self._epochResult:
+                index = item['index']
+                hasData = nextTime == item['timeIndex'][index]
+                
+                for key in item:
+                    if key in [ 'index', 'timeIndex' ]:
+                        continue
+                    
+                    attrData = item[key]
+                    value = None
+                    if hasData:
+                        value = attrData['source'][index]
+                            
+                    attrData['values'].append( value )
+                
+                if hasData:    
+                    index += 1
+                    if index == len( item['timeIndex'] ):
+                        index = None
+                    
+                    item['index'] = index
+                    
     def _cleanResult(self, result = None ):
         if result == None:
             result = self._result
@@ -147,7 +174,8 @@ class TimeSeries(object):
             return
         
         for key in result:
-            self._cleanResult( result[key] )
+            if key != 'TimeIndex':
+                self._cleanResult( result[key] )
 
 def _isTimeSeries(value):
     return seriesAttr in value and timeIndexAttr in value
