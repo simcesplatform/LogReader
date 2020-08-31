@@ -13,6 +13,7 @@ from LogReader.services import timeSeries
 from testLogReader import dataManager, testingUtils
 
 batteryMsgIds = [ 'battery1-1', 'battery2-1', 'battery1-2', 'battery2-2' ]
+batteryMsgIdsMissing = [ 'battery1-1', 'battery1-2', 'battery2-2' ]
 chargePercentageAttr = 'batteryState.chargePercentage'
 batteryStateAttr = 'batteryState'
  
@@ -32,7 +33,15 @@ testScenarios = [
      ],
      'testGetMessagesForNextEpoch': [[ 1, 2 ]],
      'testGetEpochData': True,
-    'testCreateTimeSeries': True } 
+    'testCreateTimeSeries': True },
+    { 'name': 'battery state from battery 1 and 2 with missing data',
+     'timeSeriesParams': [ 
+         {'msgIds': batteryMsgIdsMissing,
+         'attrs': [ batteryStateAttr ]}
+     ],
+     'testGetMessagesForNextEpoch': [[ 1, 2 ]],
+     'testGetEpochData': True,
+     'testCreateTimeSeries': True } 
 ]
 
 def testWithAllScenarios( testName ):
@@ -47,6 +56,7 @@ def testWithAllScenarios( testName ):
                     continue
                 
                 testInstance._scenarioName = scenario['name']
+                testInstance._skipAsserts = expected == ''
                 with testInstance.subTest( scenario = scenario['name'] ):
                     test( testInstance, timeSeries, expected )
                         
@@ -105,8 +115,9 @@ class TestTimeSeries(unittest.TestCase):
             #pprint.pprint( timeSeries._epochResult )
             results['result'].append( copy.deepcopy(timeSeries._result) )
             results['epochResult'].append( copy.deepcopy(timeSeries._epochResult) )
-            self.assertEqual( timeSeries._result, expected['result'][index] )
-            self.assertEqual( timeSeries._epochResult, expected['epochResult'][index] )
+            if not self._skipAsserts:
+                self.assertEqual( timeSeries._result, expected['result'][index] )
+                self.assertEqual( timeSeries._epochResult, expected['epochResult'][index] )
             index += 1
              
     
@@ -114,7 +125,8 @@ class TestTimeSeries(unittest.TestCase):
     def testCreateTimeSeries(self, timeSeries, expected ):
         timeSeries.createTimeSeries()
         self._results[self._scenarioName] = timeSeries._result
-        self.assertEqual( timeSeries._result, expected )
+        if not self._skipAsserts:
+            self.assertEqual( timeSeries._result, expected )
     
     def _getTestData1(self):
         msgs = self._getMessagesForIds( batteryMsgIds )
