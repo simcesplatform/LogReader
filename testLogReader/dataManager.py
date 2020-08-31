@@ -9,6 +9,7 @@ import sys
 import json
 from bson import json_util
 import pathlib
+from functools import partial
 
 from LogReader.db import db, simulations, messages
 
@@ -22,7 +23,9 @@ testMsgSimId = '2020-06-03T04:01:52.345Z'
 
 def writeJsonFile( fileName, data ):
     with open( testDataDir / fileName, 'w' ) as file:
-        json.dump( data, file, indent = 3 )
+        opt = json_util.JSONOptions(strict_number_long=False, datetime_representation=json_util.DatetimeRepresentation.ISO8601, strict_uuid=False, json_mode=0, document_class=dict, tz_aware=True,  unicode_decode_error_handler='strict'  )
+        default = partial( json_util.default, json_options = opt ) 
+        json.dump( data, file, default = default, indent = 3 )
 
 def readJsonFile( fileName ):
     '''

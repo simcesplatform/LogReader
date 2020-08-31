@@ -23,14 +23,16 @@ testScenarios = [
          'attrs': [ batteryStateAttr ]}
      ],
      'testGetMessagesForNextEpoch': [[ 1, 2 ]],
-     'testGetEpochData': True },
+     'testGetEpochData': True,
+     'testCreateTimeSeries': '' },
     { 'name': 'charge percentage from battery 1 and 2',
      'timeSeriesParams': [ 
          {'msgIds': batteryMsgIds,
          'attrs': [ chargePercentageAttr ],}
      ],
      'testGetMessagesForNextEpoch': [[ 1, 2 ]],
-     'testGetEpochData': True }
+     'testGetEpochData': True,
+    'testCreateTimeSeries': '' } 
 ]
 
 def testWithAllScenarios( testName ):
@@ -105,6 +107,11 @@ class TestTimeSeries(unittest.TestCase):
             self._store['result'].append( copy.deepcopy(timeSeries._result) )
             self._store['epochResult'].append( copy.deepcopy(timeSeries._epochResult) ) 
     
+    @testWithAllScenarios( 'testCreateTimeSeries' )        
+    def testCreateTimeSeries(self, timeSeries, expected ):
+        timeSeries.createTimeSeries()
+        self._store = timeSeries._result
+    
     def _getTestData1(self):
         msgs = self._getMessagesForIds( batteryMsgIds )
         tsMsgs = timeSeries.TimeSeriesMessages( [ chargePercentageAttr ], msgs )
@@ -118,7 +125,7 @@ class TestTimeSeries(unittest.TestCase):
             fileName = _getTestDataResultFileName( testName, scenario['name'] )
             expected = dataManager.readJsonFile( fileName )
         return timeSeries.TimeSeries( tsMsgsLst ), expected
-        
+    
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testGetMessagesForNextEpoch']
     unittest.main()

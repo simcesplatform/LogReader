@@ -3,6 +3,7 @@ Created on 21.8.2020
 
 @author: hylli
 '''
+import dateutil
 
 from LogReader.db import messages
 
@@ -64,6 +65,9 @@ class TimeSeries(object):
     def createTimeSeries(self):
         while self._findNextEpoch():
             self._getEpochData()
+            self._processEpochData()
+            
+        self._cleanResult()
             
     def _findNextEpoch(self):
         nextEpochs = [ tsMsgs.getNextEpochNumber() for tsMsgs in self._data if tsMsgs.getNextEpochNumber() != None ]
@@ -103,7 +107,8 @@ class TimeSeries(object):
                         if foundTimeSeries:
                             self._epochResult.append( attrParent )
                             attrParent['index'] = 0
-                            attrParent['timeIndex'] = prevValue[timeIndexAttr] 
+                            #attrParent['timeIndex'] = prevValue[timeIndexAttr]
+                            attrParent['timeIndex'] = [ dateutil.parser.isoparse( date ) for date in prevValue[timeIndexAttr] ]
                             series = prevValue[seriesAttr]
                             if i == len( attr ) -1:
                                 for key in series:
@@ -112,7 +117,37 @@ class TimeSeries(object):
                             
                             else:
                                 resultSeries = attrParent.setdefault( attr[-1], { 'values': [] })
-                                resultSeries['source'] = series[attr[-1]][ seriesValueAttr ] 
+                                resultSeries['source'] = series[attr[-1]][ seriesValueAttr ]
+                                
+    def _processEpochData(self):
+        timeIndex = self._result['TimeIndex']
+        numValues = len( timeIndex )
+        for data in self._epochResult:
+            for attr in data:
+                if attr == 'index' or attr == 'timeIndex':
+                    continue
+                
+                values = data[attr]['values']
+                missing = numValues -len( values )
+                if missing > 0:
+                    values.extend( missing *[ None ] )
+        
+        #nextTime = min( dateutil.)
+    
+    def _cleanResult(self, result = None ):
+        if result == None:
+            result = self._result
+        
+        if 'index' in result and 'timeIndex' in result:
+            del result['index']
+            del result['timeIndex']
+            for attr in result:
+                result[attr] = result[attr]['values']
+                
+            return
+        
+        for key in result:
+            self._cleanResult( result[key] )
 
 def _isTimeSeries(value):
-    return seriesAttr in value
+    return seriesAttr in value and timeIndexAttr in value
