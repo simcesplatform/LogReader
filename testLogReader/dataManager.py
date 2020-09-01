@@ -21,19 +21,31 @@ testDataDir = pathlib.Path(__file__).parent.absolute() / 'data'
 # id of simulation for which there are test messages.
 testMsgSimId = '2020-06-03T04:01:52.345Z'
 
-def writeJsonFile( fileName, data ):
-    with open( testDataDir / fileName, 'w' ) as file:
-        opt = json_util.JSONOptions(strict_number_long=False, datetime_representation=json_util.DatetimeRepresentation.ISO8601, strict_uuid=False, json_mode=0, document_class=dict, tz_aware=True,  unicode_decode_error_handler='strict'  )
-        default = partial( json_util.default, json_options = opt ) 
-        json.dump( data, file, default = default, indent = 3 )
+def writeFile( fileName, data ):
+    filePath = testDataDir / fileName
+    fileType = filePath.suffix[1:]
+    with open( filePath, 'w' ) as file:
+        if fileType == 'json':
+            opt = json_util.JSONOptions(strict_number_long=False, datetime_representation=json_util.DatetimeRepresentation.ISO8601, strict_uuid=False, json_mode=0, document_class=dict, tz_aware=True,  unicode_decode_error_handler='strict'  )
+            default = partial( json_util.default, json_options = opt ) 
+            json.dump( data, file, default = default, indent = 3 )
+            
+        elif fileType == 'csv':
+            file.write( data )
 
-def readJsonFile( fileName ):
+def readFile( fileName ):
     '''
-    Read the given file from test data directory as JSON.
+    Read the given file from test data directory.
     '''
-    with( open( testDataDir / fileName, 'r' )) as data:
-        # json_util is used to parse the mongodb extended JSON data correctly mainly  dates to python datetime objects
-        data = json.load(data, object_hook=json_util.object_hook)
+    filePath = testDataDir / fileName
+    fileType = filePath.suffix[1:] 
+    with( open( filePath, 'r' )) as data:
+        if fileType == 'json':
+            # json_util is used to parse the mongodb extended JSON data correctly mainly  dates to python datetime objects
+            data = json.load(data, object_hook=json_util.object_hook)
+            
+        elif fileType == 'csv':
+            data = None
         
     return data
     
@@ -42,7 +54,7 @@ def insertDataFromFile( fileName, collectionName ):
     Inserts data from a file from the test data directory whose name is given to the given collection.
     Returns a dict containing the test data.
     '''
-    testItems = readJsonFile( fileName )
+    testItems = readFile( fileName )
     # ensure collection is empty before adding data.
     collection = db[collectionName]
     collection.drop()

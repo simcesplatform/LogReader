@@ -24,24 +24,24 @@ testScenarios = [
          'attrs': [ batteryStateAttr ]}
      ],
      'testGetMessagesForNextEpoch': [[ 1, 2 ]],
-     'testGetEpochData': True,
-     'testCreateTimeSeries': True },
+     'testGetEpochData': { 'fileType': 'json' },
+     'testCreateTimeSeries': { 'fileType': 'json' } },
     { 'name': 'charge percentage from battery 1 and 2',
      'timeSeriesParams': [ 
          {'msgIds': batteryMsgIds,
          'attrs': [ chargePercentageAttr ],}
      ],
      'testGetMessagesForNextEpoch': [[ 1, 2 ]],
-     'testGetEpochData': True,
-    'testCreateTimeSeries': True },
+     'testGetEpochData': { 'fileType': 'json' },
+    'testCreateTimeSeries': { 'fileType': 'json' } },
     { 'name': 'battery state from battery 1 and 2 with missing data',
      'timeSeriesParams': [ 
          {'msgIds': batteryMsgIdsMissing,
          'attrs': [ batteryStateAttr ]}
      ],
      'testGetMessagesForNextEpoch': [[ 1, 2 ]],
-     'testGetEpochData': True,
-     'testCreateTimeSeries': True } 
+     'testGetEpochData': { 'fileType': 'json' },
+     'testCreateTimeSeries': { 'fileType': 'json' } } 
 ]
 
 def testWithAllScenarios( testName ):
@@ -51,30 +51,30 @@ def testWithAllScenarios( testName ):
             testInstance._testName = testName
             testInstance._results = {}
             for scenario in testScenarios:
-                timeSeries, expected = TestTimeSeries.getTestData( scenario, testName )
+                testInstance._skipAsserts = False
+                timeSeries, expected = testInstance.getTestData( scenario )
                 if expected == None:
                     continue
-                
+                    
                 testInstance._scenarioName = scenario['name']
-                testInstance._skipAsserts = expected == ''
                 with testInstance.subTest( scenario = scenario['name'] ):
                     test( testInstance, timeSeries, expected )
                         
         return wrapper
     return decorator
 
-def _getTestDataResultFileName( testName, scenarioName, actual = False ):
+def _getTestDataResultFileName( testName, scenarioName, actual = False, fileType = 'json' ):
     result = 'result'
     if actual:
         result = 'actual_result'
     scenarioName = scenarioName.replace( ' ', '_' )
-    return f'{testName}_{scenarioName}_{result}.json'
+    return f'{testName}_{scenarioName}_{result}.{fileType}'
                 
 class TestTimeSeries(unittest.TestCase):
     
     @classmethod
     def setUpClass(cls):
-        cls._testData = dataManager.readJsonFile( 'messages1.json' )
+        cls._testData = dataManager.readFile( 'messages1.json' )
 
 
     def setUp(self):
@@ -83,8 +83,8 @@ class TestTimeSeries(unittest.TestCase):
 
     def tearDown(self):
         for scenarioName in self._results:
-            fileName = _getTestDataResultFileName( self._testName, scenarioName, True )
-            dataManager.writeJsonFile( fileName, self._results[scenarioName] )
+            fileName = _getTestDataResultFileName( self._testName, scenarioName, True, self._fileType )
+            dataManager.writeFile( fileName, self._results[scenarioName] )
 
     @classmethod
     def _getMessagesForIds(cls, msgIds ):
@@ -133,13 +133,19 @@ class TestTimeSeries(unittest.TestCase):
         tsMsgs = timeSeries.TimeSeriesMessages( [ chargePercentageAttr ], msgs )
         return msgs, tsMsgs
     
-    @classmethod
-    def getTestData(cls, scenario, testName ):
-        tsMsgsLst = [ timeSeries.TimeSeriesMessages( params['attrs'],  cls._getMessagesForIds( params['msgIds'] ) ) for params in scenario['timeSeriesParams'] ]   
-        expected = scenario[testName]
-        if expected == True:
-            fileName = _getTestDataResultFileName( testName, scenario['name'] )
-            expected = dataManager.readJsonFile( fileName )
+    def getTestData(self, scenario):
+        tsMsgsLst = [ timeSeries.TimeSeriesMessages( params['attrs'],  self._getMessagesForIds( params['msgIds'] ) ) for params in scenario['timeSeriesParams'] ]   
+        expected = scenario.get(self._testName)
+        if expected != None and type( expected ) == dict and 'fileType' in expected:
+            fileType = expected['fileType']
+            self._fileType = fileType
+            if not expected.get( 'noResult' ):
+                fileName = _getTestDataResultFileName( self._testName, scenario['name'], False, fileType )
+                expected = dataManager.readFile( fileName )
+                
+            else:
+                self._skipAsserts = True
+                
         return timeSeries.TimeSeries( tsMsgsLst ), expected
     
 if __name__ == "__main__":
