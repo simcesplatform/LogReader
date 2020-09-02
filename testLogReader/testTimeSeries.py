@@ -35,7 +35,9 @@ testScenarios = [
      ],
      'testGetMessagesForNextEpoch': [[ 1, 2 ]],
      'testGetEpochData': { 'fileType': 'json' },
-    'testCreateTimeSeries': { 'fileType': 'json' } },
+    'testCreateTimeSeries': { 'fileType': 'json' },
+     'testCreateCsvHeaders': { 'fileType': 'csv', 'noResult': True },
+     'testCreateCsv': { 'fileType': 'csv','noResult': True } },
     { 'name': 'battery state from battery 1 and 2 with missing data',
      'timeSeriesParams': [ 
          {'msgIds': batteryMsgIdsMissing,
@@ -43,7 +45,9 @@ testScenarios = [
      ],
      'testGetMessagesForNextEpoch': [[ 1, 2 ]],
      'testGetEpochData': { 'fileType': 'json' },
-     'testCreateTimeSeries': { 'fileType': 'json' } } 
+     'testCreateTimeSeries': { 'fileType': 'json' },
+     'testCreateCsvHeaders': { 'fileType': 'csv', 'noResult': True },
+     'testCreateCsv': { 'fileType': 'csv','noResult': True } } 
 ]
 
 def testWithAllScenarios( testName ):

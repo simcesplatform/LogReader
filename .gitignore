@@ -2,4 +2,4 @@
 **/__pycache__
 *.html
 .*
-testLogReader/data/*actual_result.json
+testLogReader/data/*actual_result.*
