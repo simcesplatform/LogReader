@@ -4,6 +4,8 @@ Created on 21.8.2020
 @author: hylli
 '''
 import dateutil
+from io import StringIO
+import csv
 
 from LogReader.db import messages
 
@@ -121,6 +123,7 @@ class TimeSeries(object):
                                 
     def _processEpochData(self):
         timeIndex = self._result['TimeIndex']
+        # move this to end of method
         numValues = len( timeIndex )
         for data in self._epochResult:
             for attr in data:
@@ -176,6 +179,54 @@ class TimeSeries(object):
         for key in result:
             if key != 'TimeIndex':
                 self._cleanResult( result[key] )
+                
+    def getResult(self):
+        return self._result
 
+class TimeSeriesCsvConverter():
+    
+    def __init__(self, timeSeries, target = None ):
+        self._timeSeries = timeSeries
+        self._target = target
+        if target == None:
+            self._target = StringIO( newline = '' )
+            
+    def createCsv(self):
+        self._createHeaders()
+        timeIndex = self._timeSeries['TimeIndex']
+        for i in range( 0, len( timeIndex )):
+            time = timeIndex[i]
+            row = dict( time )
+            row.update( { column: values[i] for (column, values) in self._columns.items() })
+            self._csv.writerow( row )
+        
+    def _createHeaders(self):
+        self._columns = {}
+        for topic in self._timeSeries:
+            if topic == 'TimeIndex':
+                continue
+            
+            topicData = self._timeSeries[ topic ] 
+            for process in topicData:
+                processData = topicData[ process ]
+                self._getProcessAttrs( processData, topic +':' +process )
+        
+        columnNames = [ 'epoch', 'timestamp' ] +list( self._columns.keys() )        
+        self._csv = csv.DictWriter( self._target, columnNames, delimiter = ';' )
+        self._csv.writeheader()
+        
+    def _getProcessAttrs(self, data, columnName ):
+        for attr in data:
+            value = data[attr]
+            newColumnName = columnName +'.' +attr
+            if type( value ) == list:
+                self._columns[newColumnName] = value
+                
+            else:
+                self._getProcessAttrs( value, newColumnName)
+        
+    def getTarget(self):
+        return self._target
+    
 def _isTimeSeries(value):
     return seriesAttr in value and timeIndexAttr in value

@@ -25,7 +25,9 @@ testScenarios = [
      ],
      'testGetMessagesForNextEpoch': [[ 1, 2 ]],
      'testGetEpochData': { 'fileType': 'json' },
-     'testCreateTimeSeries': { 'fileType': 'json' } },
+     'testCreateTimeSeries': { 'fileType': 'json' },
+     'testCreateCsvHeaders': { 'fileType': 'csv', 'noResult': True },
+     'testCreateCsv': { 'fileType': 'csv','noResult': True } },
     { 'name': 'charge percentage from battery 1 and 2',
      'timeSeriesParams': [ 
          {'msgIds': batteryMsgIds,
@@ -128,6 +130,20 @@ class TestTimeSeries(unittest.TestCase):
         if not self._skipAsserts:
             self.assertEqual( timeSeries._result, expected )
     
+    @testWithAllScenarios( 'testCreateCsvHeaders' )        
+    def testCreateCsvHeaders(self, timeSeriesObj, expected ):
+        timeSeriesObj.createTimeSeries()
+        csv = timeSeries.TimeSeriesCsvConverter( timeSeriesObj.getResult() )
+        csv._createHeaders()
+        self._results[self._scenarioName] = csv.getTarget().getvalue()
+        
+    @testWithAllScenarios( 'testCreateCsv' )        
+    def testCreateCsv(self, timeSeriesObj, expected ):
+        timeSeriesObj.createTimeSeries()
+        csv = timeSeries.TimeSeriesCsvConverter( timeSeriesObj.getResult() )
+        csv.createCsv()
+        self._results[self._scenarioName] = csv.getTarget().getvalue()
+
     def _getTestData1(self):
         msgs = self._getMessagesForIds( batteryMsgIds )
         tsMsgs = timeSeries.TimeSeriesMessages( [ chargePercentageAttr ], msgs )
