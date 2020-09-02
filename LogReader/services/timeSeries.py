@@ -8,6 +8,7 @@ from io import StringIO
 import csv
 
 from LogReader.db import messages
+from LogReader import utils
 
 seriesAttr = 'Series'
 seriesValueAttr = 'Values'
@@ -197,6 +198,7 @@ class TimeSeriesCsvConverter():
         for i in range( 0, len( timeIndex )):
             time = timeIndex[i]
             row = dict( time )
+            row['timestamp'] = utils.dateToIsoString( row['timestamp'] )
             row.update( { column: values[i] for (column, values) in self._columns.items() })
             self._csv.writerow( row )
         
