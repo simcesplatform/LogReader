@@ -64,3 +64,38 @@ def paramToInt( paramName, params ):
             raise falcon.HTTPBadRequest( title = "Invalid integer value", description = f"Invalid integer value for {paramName}: {param}." )
         
     return param
+
+def validateMessageParams( params ):
+    '''
+    Validate and convert parameters related to getting messages .
+    params (dict): Parameters for getting messages from for example query parameters from a falcon HTTP request. 
+    Returns Dictionary containing the validated and converted parameters.
+    Raises falcon.HTTPBadRequest if there are invalid values for sim dates, epoch numbers or onlyWarnings.
+    '''
+    validated = dict( params )
+    # process and validate possible fromSimDate and toSimDate date parameters  
+    validated['fromSimDate'], validated['toSimDate'] = processDateParams( params, 'fromSimDate', 'toSimDate' )
+    # Get possible epoch filtering parameters and check that they are integers.
+    validated['epoch'] = paramToInt( 'epoch', params )
+    validated['startEpoch'] = paramToInt( 'startEpoch', params )
+    validated['endEpoch'] = paramToInt( 'endEpoch', params )
+    
+    # get possible process ids and separate comma separated values into a list if the value is not already a list.
+    validated['process'] = params.get( 'process' )
+    if validated['process'] and type( validated['process'] ) != list:
+        validated['process'] = validated['process'].split( ',' )
+    
+    # get onlyWarnings parameter and convert to bool if not already converted
+    onlyWarnings = params.get( 'onlyWarnings', False )
+    if onlyWarnings and type( onlyWarnings ) != bool:
+        conversion = { 'true': True, 'false': False }
+        try:
+            onlyWarnings = conversion[onlyWarnings]
+            
+        except KeyError:
+            raise falcon.HTTPBadRequest( title = 'Invalid value for onlyWarnings.', description = f'Value should be true or false but it was {onlyWarnings}.' )
+    
+    validated['onlyWarnings'] = onlyWarnings    
+    # get topic parameter
+    validated['topic'] = params.get( 'topic' )
+    return validated
