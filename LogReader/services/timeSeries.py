@@ -232,3 +232,39 @@ class TimeSeriesCsvConverter():
     
 def _isTimeSeries(value):
     return seriesAttr in value and timeIndexAttr in value
+
+class TimeSeriesMessageFilter():
+    
+    def __init__(self, attrs, process = None, topic = None ):
+        self._attrs = attrs
+        self._process = process
+        self._topic = topic
+        
+    @property
+    def attrs(self):
+        return self._attrs
+    
+    @property
+    def process(self):
+        return self._process
+    
+    @property
+    def topic(self):
+        return self._topic
+    
+def getTimeSeries( messageStore, simId, messageFilters, epoch = None, startEpoch = None, endEpoch = None, fromSimDate = None, toSimDate = None, csv = False ):
+    timeSeriesMsgsLst = []
+    for msgFilter in messageFilters:
+        msgs = messageStore.getMessages( simId, epoch = epoch, endEpoch = endEpoch, fromSimDate = fromSimDate, toSimDate = toSimDate, process = msgFilter.process, topic = msgFilter.topic )
+        msgs = [ message for message in msgs if messages.epochNumAttr in message ]
+        timeSeriesMsgsLst.append( TimeSeriesMessages( msgFilter.attrs, msgs ))
+        
+    timeSeries = TimeSeries( timeSeriesMsgsLst )
+    timeSeries.createTimeSeries()
+    result = timeSeries.getResult()
+    if csv:
+        csvConverter = TimeSeriesCsvConverter( result )
+        csvConverter.createCsv()
+        result = csvConverter.getTarget().getvalue()
+        
+    return result 

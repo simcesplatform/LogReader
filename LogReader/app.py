@@ -15,6 +15,7 @@ import waitress
 
 from LogReader.controllers.simulations import SimController
 from LogReader.controllers.messages import MsgController
+from LogReader.controllers.timeSeries import TimeSeriesController
 from LogReader.db import simulations, messages
 from LogReader import utils
 import LogReader
@@ -49,6 +50,8 @@ api.add_route( '/simulations/{simId}', simController, suffix = 'simulation' )
 # Give the messages controller the messages db module as the source for messages.
 msgController = MsgController( messages )
 api.add_route( '/simulations/{simId}/messages', msgController )
+timeSeriesController = TimeSeriesController( messages )
+api.add_route( '/simulations/{simId}/timeseries', timeSeriesController )
 
 if __name__ == '__main__':
     # this is main file launch the application
