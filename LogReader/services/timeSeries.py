@@ -70,6 +70,7 @@ class TimeSeries(object):
             self._getEpochData()
             self._processEpochData()
             
+            
         self._cleanResult()
             
     def _findNextEpoch(self):
@@ -122,9 +123,9 @@ class TimeSeries(object):
                                 resultSeries = attrParent.setdefault( attr[-1], { 'values': [] })
                                 resultSeries['source'] = series[attr[-1]][ seriesValueAttr ]
                                 
-    def _processEpochData(self):
+    def _handleMissingDataForEpoch(self):
+        # todo does not handle if attribute not processed before end
         timeIndex = self._result['TimeIndex']
-        # move this to end of method
         numValues = len( timeIndex )
         for data in self._epochResult:
             for attr in data:
@@ -136,6 +137,9 @@ class TimeSeries(object):
                 if missing > 0:
                     values.extend( missing *[ None ] )
         
+    def _processEpochData(self):
+        self._handleMissingDataForEpoch()
+        timeIndex = self._result['TimeIndex']
         while True:
             nextTimes = [ item['timeIndex'][ item['index'] ] for item in self._epochResult if item['index'] != None ]
             if len( nextTimes ) == 0:
