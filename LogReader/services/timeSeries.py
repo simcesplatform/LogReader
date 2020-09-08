@@ -124,18 +124,20 @@ class TimeSeries(object):
                                 resultSeries['source'] = series[attr[-1]][ seriesValueAttr ]
                                 
     def _handleMissingDataForEpoch(self):
-        # todo does not handle if attribute not processed before end
-        timeIndex = self._result['TimeIndex']
-        numValues = len( timeIndex )
         for data in self._epochResult:
             for attr in data:
                 if attr == 'index' or attr == 'timeIndex':
                     continue
                 
                 values = data[attr]['values']
-                missing = numValues -len( values )
-                if missing > 0:
-                    values.extend( missing *[ None ] )
+                self._addMissingValues( values )
+                
+    def _addMissingValues(self, values):                
+        timeIndex = self._result['TimeIndex']
+        numValues = len( timeIndex )
+        missing = numValues -len( values )
+        if missing > 0:
+            values.extend( missing *[ None ] )
         
     def _processEpochData(self):
         self._handleMissingDataForEpoch()
@@ -177,7 +179,9 @@ class TimeSeries(object):
             del result['index']
             del result['timeIndex']
             for attr in result:
-                result[attr] = result[attr]['values']
+                values = result[attr]['values']
+                self._addMissingValues(values)
+                result[attr] = values 
                 
             return
         
