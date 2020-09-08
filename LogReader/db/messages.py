@@ -18,6 +18,7 @@ epochEndAttr = 'EndTime'
 topicAttr = 'Topic'
 epochTopic = 'Epoch'
 idAttr = 'MessageId'
+timestampAttr = 'Timestamp'
 
 log = logging.getLogger( __name__ )
 
@@ -30,7 +31,7 @@ def _getMessageCollectionName( simId ):
     '''
     return collectionNamePrefix +simId
 
-def getMessages( simId, epoch  = None, startEpoch = None, endEpoch = None, process = None, onlyWarnings = False, toSimDate = None, fromSimDate = None, topic = None ):
+def getMessages( simId, epoch  = None, startEpoch = None, endEpoch = None, process = None, onlyWarnings = False, toSimDate = None, fromSimDate = None, topic = None, sortAttr = timestampAttr ):
     '''
     Get messages that match the given parameters from a simulation run.
     simId (str): Id of the simulation whose messages are fetched.
@@ -42,6 +43,7 @@ def getMessages( simId, epoch  = None, startEpoch = None, endEpoch = None, proce
     fromSimDate (datetime): Return messages from and after the epoch that contains the given date.
     toSimDate (datetime): Return messages from and before the epoch that contains the given date.
     topic (str): Get messages matching the given topic pattern which can use the * and # wildcard characters used by RabbitMQ.
+    sortAttr (str): Messages are sorted in ascending order by this message attribute.
     Returns a list of dictionaries. None if there is no collection for the messages.
     '''
     log.debug( f'Get messages for simulation {simId} with parameters epoch: {epoch}, startEpoch: {startEpoch}, endEpoch: {endEpoch}, process: {process}, onlyWarnings: {onlyWarnings}, fromSimDate: {fromSimDate}, toSimDate: {toSimDate} and topic: {topic}.' )
@@ -85,6 +87,9 @@ def getMessages( simId, epoch  = None, startEpoch = None, endEpoch = None, proce
     log.debug( f'Getting messages from collection {collectionName} with query: {query}.')    
     # get all attributes except mongodb id
     result = db[ collectionName ].find( query, { '_id': 0 } )
+    if sortAttr != None:
+        result.sort( sortAttr, pymongo.ASCENDING )
+    
     return list( result ) 
 
 def _getEpochsForSimDates( simId, fromSimDate = None, toSimDate = None ):
