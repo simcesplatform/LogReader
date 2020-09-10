@@ -2,6 +2,8 @@
 '''
 Helper functions used with tests.
 '''
+import csv
+import io
 
 from falcon import testing
 
@@ -44,3 +46,23 @@ def checkItemsById( test, idAttr, result, expected ):
     ids = [ item[ idAttr ] for item in result ]
     expectedIds = [ item[ idAttr ] for item in expected ]
     test.assertCountEqual( ids, expectedIds, 'Did not get the expected items.' )
+
+def checkCsv( test, result: str, expected: csv.DictReader, delimiter = ';' ):
+    result = io.StringIO( result, newline = '' )
+    result = csv.DictReader( result, delimiter = ';' )
+    resultHeaders = set( result.fieldnames )
+    expectedHeaders = set( expected.fieldnames )
+    test.assertEqual( resultHeaders, expectedHeaders, 'Result and expected should have the same headers.' )
+    line = 1
+    for expectedRow in expected:
+        line += 1
+        try:
+            resultRow = next( result )
+            
+        except StopIteration:
+            test.fail( f'No more rows in result but was expecting a row containing: {expectedRow}.' )
+            
+        test.assertEqual( resultRow, expectedRow, f'Result and expected rows do not match on line {line}.' )
+        
+    with( test.assertRaises( StopIteration, msg = 'Result has more rows than expected.' )):
+        next( result )

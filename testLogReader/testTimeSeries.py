@@ -27,8 +27,8 @@ testScenarios = [
      'testGetMessagesForNextEpoch': [[ 1, 2 ]],
      'testGetEpochData': { 'fileType': 'json' },
      'testCreateTimeSeries': { 'fileType': 'json' },
-     'testCreateCsvHeaders': { 'fileType': 'csv', 'noResult': True },
-     'testCreateCsv': { 'fileType': 'csv','noResult': True } },
+     'testCreateCsvHeaders': { 'fileType': 'csv' },
+     'testCreateCsv': { 'fileType': 'csv' } },
     { 'name': 'charge percentage from battery 1 and 2',
      'timeSeriesParams': [ 
          {'msgIds': batteryMsgIds,
@@ -37,8 +37,8 @@ testScenarios = [
      'testGetMessagesForNextEpoch': [[ 1, 2 ]],
      'testGetEpochData': { 'fileType': 'json' },
     'testCreateTimeSeries': { 'fileType': 'json' },
-     'testCreateCsvHeaders': { 'fileType': 'csv', 'noResult': True },
-     'testCreateCsv': { 'fileType': 'csv','noResult': True } },
+     'testCreateCsvHeaders': { 'fileType': 'csv' },
+     'testCreateCsv': { 'fileType': 'csv' } },
     { 'name': 'battery state from battery 1 and 2 with missing data',
      'timeSeriesParams': [ 
          {'msgIds': batteryMsgIdsMissing,
@@ -47,8 +47,8 @@ testScenarios = [
      'testGetMessagesForNextEpoch': [[ 1, 2 ]],
      'testGetEpochData': { 'fileType': 'json' },
      'testCreateTimeSeries': { 'fileType': 'json' },
-     'testCreateCsvHeaders': { 'fileType': 'csv', 'noResult': True },
-     'testCreateCsv': { 'fileType': 'csv','noResult': True } },
+     'testCreateCsvHeaders': { 'fileType': 'csv' },
+     'testCreateCsv': { 'fileType': 'csv', } },
     { 'name': 'battery state from battery 1 and 2 with missing data 2',
      'timeSeriesParams': [ 
          {'msgIds': batteryMsgIdsMissing2,
@@ -57,8 +57,8 @@ testScenarios = [
      'testGetMessagesForNextEpoch': [[ 1, 2 ]],
      'testGetEpochData': { 'fileType': 'json' },
      'testCreateTimeSeries': { 'fileType': 'json' },
-     'testCreateCsvHeaders': { 'fileType': 'csv', 'noResult': True },
-     'testCreateCsv': { 'fileType': 'csv', 'noResult': True } } 
+     'testCreateCsvHeaders': { 'fileType': 'csv' },
+     'testCreateCsv': { 'fileType': 'csv', } } 
 ]
 
 def testWithAllScenarios( testName ):
@@ -150,14 +150,20 @@ class TestTimeSeries(unittest.TestCase):
         timeSeriesObj.createTimeSeries()
         csv = timeSeries.TimeSeriesCsvConverter( timeSeriesObj.getResult() )
         csv._createHeaders()
-        self._results[self._scenarioName] = csv.getTarget().getvalue()
+        result = csv.getTarget().getvalue()
+        self._results[self._scenarioName] = result
+        if not self._skipAsserts:
+            testingUtils.checkCsv( self, result, expected )
         
     @testWithAllScenarios( 'testCreateCsv' )        
     def testCreateCsv(self, timeSeriesObj, expected ):
         timeSeriesObj.createTimeSeries()
         csv = timeSeries.TimeSeriesCsvConverter( timeSeriesObj.getResult() )
         csv.createCsv()
-        self._results[self._scenarioName] = csv.getTarget().getvalue()
+        result = csv.getTarget().getvalue()
+        self._results[self._scenarioName] = result
+        if not self._skipAsserts:
+            testingUtils.checkCsv( self, result, expected )
 
     def _getTestData1(self):
         msgs = self._getMessagesForIds( batteryMsgIds )

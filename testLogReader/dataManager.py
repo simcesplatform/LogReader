@@ -10,6 +10,8 @@ import json
 from bson import json_util
 import pathlib
 from functools import partial
+import csv
+import io
 
 from LogReader.db import db, simulations, messages
 
@@ -33,19 +35,24 @@ def writeFile( fileName, data ):
         elif fileType == 'csv':
             file.write( data )
 
-def readFile( fileName ):
+def readFile( fileName, csvDelimiter = ';' ):
     '''
     Read the given file from test data directory.
     '''
     filePath = testDataDir / fileName
-    fileType = filePath.suffix[1:] 
-    with( open( filePath, 'r' )) as data:
+    fileType = filePath.suffix[1:]
+    fileParams = {} 
+    if fileType == 'csv':
+        fileParams[ 'newline' ] = ''
+         
+    with( open( filePath, 'r', **fileParams )) as data:
         if fileType == 'json':
             # json_util is used to parse the mongodb extended JSON data correctly mainly  dates to python datetime objects
             data = json.load(data, object_hook=json_util.object_hook)
             
         elif fileType == 'csv':
-            data = None
+            data = io.StringIO( data.read(), newline = '' ) 
+            data = csv.DictReader( data, delimiter = csvDelimiter )
         
     return data
     
