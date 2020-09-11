@@ -66,3 +66,10 @@ def checkCsv( test, result: str, expected: csv.DictReader, delimiter = ';' ):
         
     with( test.assertRaises( StopIteration, msg = 'Result has more rows than expected.' )):
         next( result )
+        
+def getTestDataResultFileName( testName, scenarioName, actual = False, fileType = 'json' ):
+    result = 'result'
+    if actual:
+        result = 'actual_result'
+    scenarioName = scenarioName.replace( ' ', '_' )
+    return f'{testName}_{scenarioName}_{result}.{fileType}'

@@ -80,13 +80,6 @@ def testWithAllScenarios( testName ):
         return wrapper
     return decorator
 
-def _getTestDataResultFileName( testName, scenarioName, actual = False, fileType = 'json' ):
-    result = 'result'
-    if actual:
-        result = 'actual_result'
-    scenarioName = scenarioName.replace( ' ', '_' )
-    return f'{testName}_{scenarioName}_{result}.{fileType}'
-                
 class TestTimeSeries(unittest.TestCase):
     
     @classmethod
@@ -100,7 +93,7 @@ class TestTimeSeries(unittest.TestCase):
 
     def tearDown(self):
         for scenarioName in self._results:
-            fileName = _getTestDataResultFileName( self._testName, scenarioName, True, self._fileType )
+            fileName = testingUtils.getTestDataResultFileName( self._testName, scenarioName, True, self._fileType )
             dataManager.writeFile( fileName, self._results[scenarioName] )
 
     @classmethod
@@ -177,7 +170,7 @@ class TestTimeSeries(unittest.TestCase):
             fileType = expected['fileType']
             self._fileType = fileType
             if not expected.get( 'noResult' ):
-                fileName = _getTestDataResultFileName( self._testName, scenario['name'], False, fileType )
+                fileName = testingUtils.getTestDataResultFileName( self._testName, scenario['name'], False, fileType )
                 expected = dataManager.readFile( fileName )
                 
             else:
