@@ -58,6 +58,12 @@ scenarios = [
                'toSimDate': '2020-06-03T14:00:00Z',
                'process': 'battery1', 
                'topic': 'energy.storage.state' },
+     'status': 200 },
+    { 'name': 'no messages',
+     'query': { 'attrs': 'batteryState',
+               'epoch': '3',
+               'process': 'battery1', 
+               'topic': 'energy.storage.state' },
      'status': 200 }
     ]
 
