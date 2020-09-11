@@ -113,6 +113,10 @@ class TestTimeSeriesApi( testingUtils.ApiTest ):
             
         elif dataFormat == 'csv':
             testingUtils.checkCsv( self, resultData, expected )
+            
+    def testSimulationNotFound(self):
+        result = self.simulate_get( '/simulations/foo/timeseries', params = { 'attrs': 'batteryState', 'topic': 'energy.storage.state' })
+        self.assertEqual( result.status_code, 404, 'Got unexpected status code.' )
         
 if __name__ == "__main__":
     unittest.main()

@@ -44,6 +44,9 @@ class TimeSeriesController():
         del params['onlyWarnings']
         
         result = timeSeries.getTimeSeries( self._messageStore, simId, [ msgFilter ], csv = dataFormat == 'csv', **params )
+        if result == None:
+            raise falcon.HTTPNotFound( title = 'Simulation not found.', description = f'Simulation with id {simId} not found.' )
+        
         if dataFormat == 'json':
             resp.media = result
             

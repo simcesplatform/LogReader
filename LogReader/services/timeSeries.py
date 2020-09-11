@@ -264,6 +264,9 @@ def getTimeSeries( messageStore, simId, messageFilters, epoch = None, startEpoch
     timeSeriesMsgsLst = []
     for msgFilter in messageFilters:
         msgs = messageStore.getMessages( simId, epoch = epoch, startEpoch = startEpoch, endEpoch = endEpoch, fromSimDate = fromSimDate, toSimDate = toSimDate, process = msgFilter.process, topic = msgFilter.topic, sortAttr = messages.epochNumAttr )
+        if msgs == None:
+            return None
+        
         msgs = [ message for message in msgs if messages.epochNumAttr in message ]
         timeSeriesMsgsLst.append( TimeSeriesMessages( msgFilter.attrs, msgs ))
         
