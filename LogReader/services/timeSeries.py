@@ -109,10 +109,12 @@ class TimeSeries(object):
                                 break
                             
                         if foundTimeSeries:
-                            self._epochResult.append( attrParent )
-                            attrParent['index'] = 0
-                            #attrParent['timeIndex'] = prevValue[timeIndexAttr]
-                            attrParent['timeIndex'] = [ dateutil.parser.isoparse( date ) for date in prevValue[timeIndexAttr] ]
+                            if not attrParent.get( 'inEpochResult' ):
+                                attrParent['inEpochResult'] = True
+                                self._epochResult.append( attrParent )
+                                attrParent['index'] = 0
+                                attrParent['timeIndex'] = [ dateutil.parser.isoparse( date ) for date in prevValue[timeIndexAttr] ]
+                                
                             series = prevValue[seriesAttr]
                             if i == len( attr ) -1:
                                 for key in series:
@@ -120,8 +122,13 @@ class TimeSeries(object):
                                     resultSeries['source'] = series[key][ seriesValueAttr ] 
                             
                             else:
-                                resultSeries = attrParent.setdefault( attr[-1], { 'values': [] })
-                                resultSeries['source'] = series[attr[-1]][ seriesValueAttr ]
+                                attrData = series.get(attr[-1])
+                                if attrData != None:
+                                    resultSeries = attrParent.setdefault( attr[-1], { 'values': [] })
+                                    resultSeries['source'] = attrData[ seriesValueAttr ]
+                                    
+        for data in self._epochResult:
+            del data['inEpochResult']
                                 
     def _handleMissingDataForEpoch(self):
         for data in self._epochResult:
@@ -151,7 +158,7 @@ class TimeSeries(object):
             timeIndex.append( { 'epoch': self._nextEpoch, 'timestamp': nextTime })
             for item in self._epochResult:
                 index = item['index']
-                hasData = nextTime == item['timeIndex'][index]
+                hasData = index != None and nextTime == item['timeIndex'][index]
                 
                 for key in item:
                     if key in [ 'index', 'timeIndex' ]:
