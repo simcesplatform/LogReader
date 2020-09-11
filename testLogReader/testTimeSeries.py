@@ -14,6 +14,7 @@ from testLogReader import dataManager, testingUtils
 
 batteryMsgIds = [ 'battery1-1', 'battery2-1', 'battery1-2', 'battery2-2' ]
 battery3MsgIds = [ 'battery3-1', 'battery3-2' ]
+battery_1_3MsgIds = [ 'battery1-1', 'battery3-1', 'battery1-2', 'battery3-2' ]
 batteryMsgIdsMissing = [ 'battery1-1', 'battery1-2', 'battery2-2' ]
 batteryMsgIdsMissing2 = [ 'battery1-1', 'battery2-1', 'battery2-2' ]
 chargePercentageAttr = 'batteryState.chargePercentage'
@@ -70,7 +71,17 @@ testScenarios = [
      'testGetEpochData': { 'fileType': 'json' },
      'testCreateTimeSeries': { 'fileType': 'json' },
      'testCreateCsvHeaders': { 'fileType': 'csv' },
-     'testCreateCsv': { 'fileType': 'csv', } } 
+     'testCreateCsv': { 'fileType': 'csv', } },
+    { 'name': 'different time indexes',
+     'timeSeriesParams': [ 
+         {'msgIds': battery_1_3MsgIds,
+         'attrs': [ chargePercentageAttr ],}
+     ],
+     'testGetMessagesForNextEpoch': [[ 1, 2 ]],
+     'testGetEpochData': { 'fileType': 'json' },
+    'testCreateTimeSeries': { 'fileType': 'json' },
+     'testCreateCsvHeaders': { 'fileType': 'csv' },
+     'testCreateCsv': { 'fileType': 'csv' } }
 ]
 
 def testWithAllScenarios( testName ):
