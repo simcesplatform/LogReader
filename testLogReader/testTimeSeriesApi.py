@@ -41,6 +41,24 @@ scenarios = [
                'process': 'battery1', 
                'topic': 'energy.storage.state' },
      'status': 200 },
+    { 'name': 'battery state for battery 1 with epoch',
+     'query': { 'attrs': 'batteryState',
+               'epoch': '2',
+               'process': 'battery1', 
+               'topic': 'energy.storage.state' },
+     'status': 200 },
+    { 'name': 'battery state for battery 1 with from simdate',
+     'query': { 'attrs': 'batteryState',
+               'fromSimDate': '2020-06-03T14:00:00Z',
+               'process': 'battery1', 
+               'topic': 'energy.storage.state' },
+     'status': 200 },
+    { 'name': 'battery state for battery 1 with to simdate',
+     'query': { 'attrs': 'batteryState',
+               'toSimDate': '2020-06-03T14:00:00Z',
+               'process': 'battery1', 
+               'topic': 'energy.storage.state' },
+     'status': 200 }
     ]
 
 class TestTimeSeriesApi( testingUtils.ApiTest ):
