@@ -137,6 +137,17 @@ class TestWebServer(unittest.TestCase):
         self.assertEqual( result.status_code, 200 )
         testingUtils.checkMessages( self, result.json(), expected )
         
+    def testGetTimeSeriesCsvForEpoch(self):
+        result = requests.get( f'{self._baseURL}/simulations/{dataManager.testMsgSimId}/timeseries', params = { 'epoch': 2, 'attrs': 'batteryState.chargePercentage,batteryState.capacity', 'topic': 'energy.storage.state', 'format': 'csv' } )
+        self.assertEqual( result.status_code, 200 )
+        testName = 'testGetTimeSeriesCsvForEpoch'
+        actualName = testingUtils.getTestDataResultFileName( testName, '', True, 'csv' )
+        dataManager.writeFile( actualName, result.text )
+        expectedName = testingUtils.getTestDataResultFileName(testName, '', False, 'csv' )
+        expected = dataManager.readFile( expectedName )
+        testingUtils.checkCsv( self, result.text, expected )
+        
+        
 
 if __name__ == "__main__":
     # execute tests
