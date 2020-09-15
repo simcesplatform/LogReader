@@ -1,6 +1,6 @@
 # API
 
-The reader implements the following API described below. This API definition is a work in progress. It is based on uncertain assumptions about the way the data would be used, what is the message data structure in particular how timeseries are stored, and what are the query capabilities of the MongoDB database where messages are stored. Changes in these assumptions may require changes to the API definition.
+LogReader implements the following API described below. 
 
 The following notation is used to document request parameters and members of JSON objects in response and request bodies:
 
@@ -31,14 +31,14 @@ List of simulation runs with the following information available about every run
 - simulationId (string): The id of the simulation.
 - name (string): A human friendly name for the simulation.
 - description (string): A longer description of the simulation run meant for humans.
-- startTime (ISO datetime): The real wordl start time of the simulation run.
+- startTime (ISO datetime): The real world start time of the simulation run.
 - endTime (ISO datetime): The real world end time of the simulation run.
 - epoch (integer): Number of epochs in the simulation run.
 - process (string[]): List of names of processes participating in the simulation run.
 
 ### Notes
 
-Name and description are just a idea that seems good but of course they then would have to be provided when the simulation is created and some how communicated to the database process. List of process names would also be nice to get somewhere though the logger process can also just keep a record of processes it gets messages from and then save them to the database when the simulation is done. If there can be a lot of processes it might not make sense to list them here. Would we need other ways to search for runs for example some kind of categorization or tagging system. We could also have a concept like simulation author or owner i.e. person or (persons?) who created the simulation. This would help people to find their simulations.
+Would we need other ways to search for runs for example some kind of categorization or tagging system. We could also have a concept like simulation author or owner i.e. person or (persons?) who created the simulation. This would help people to find their simulations.
 
 ## Get simulation
 
@@ -54,10 +54,6 @@ Returns general information about the given simulation run.
 ### Response
 
 Information about the given simulation run with the same contents as in each get simulations response item.
-
-### Notes
-
-Could also give more detailed information if we have it. For example list of topics used in the simulation run could be included here . As the response is defined now this API endpoint is not necessary since the same information can be obtained from the get simulations response assuming that the processes list will be there.
 
 ## Get messages for simulation run
 
@@ -80,13 +76,7 @@ Returns messages from the given simulation run. Without parameters returns all m
 
 ### Response
 
-List of messages as they have been saved into the database including the message metadata.
-
-### Notes
-
-Depending on how exactly the db querying works it might not be possible to emulate the topic based filtering so that it fully supports how the subscribing  works. So topic filtering may be more limited than now promised here.
-
-Should there be options for limiting what part of messages are returned. Current idea is return everything i.e. the metadata in the db and the message contents as is.
+List of messages as they have been saved into the database including the message metadata. The messages will be sorted in ascending order by timestamp.
 
 ## Get simple timeseries for simulation
 
@@ -108,13 +98,13 @@ json
 
 A JSON object with the following members:
 
-- timeIndex (timeIndex[]): List of time index objects that indicate the timestamp for the data. For example if a timeindex object is the fifth item in the timeindex list then it has the time for the fifth attribute value in each value list. If there is no value for an attribute for a corresponding timeIndex value, the value will be nul.
+- TimeIndex (timeIndex[]): List of time index objects that indicate the timestamp for the data. For example if a timeindex object is the fifth item in the timeindex list then it has the time for the fifth attribute value in each value list. If there is no value for an attribute for a corresponding timeIndex value, the value will be nul.
 - {topic} (topicData): For each topic there is timeseries data a member named after the topic. The value is a topicDATa object.
 
 timeIndex object
 
 - timestamp (ISO datetime): Indicates the simulation time for the corresponding data. 
-- epoch (integer): Indicates the epoch for the corresponding data.
+- epoch (integer): Indicates the epoch for the message the corresponding data is from. 
 
 TopicData object
 
@@ -128,7 +118,7 @@ csv
 
 csv data with the following column titles and colun value data types
 
-- epoch (integer): Number of the epoch the data in the row is from.
+- epoch (integer): Number of the epoch for the message the data in the row is from.
 - timestamp (iso datetime): Simulation timestamp for the data in the row.
 - {topic}:{processname}.{attr}: For each topic, process and message attribute the timeseries contains data for there is a column for it with a title consisting of the topic, process and attribute names. If there is no data for the row at a certain time then the column has an empty cell.
 
