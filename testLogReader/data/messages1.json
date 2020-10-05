@@ -36,7 +36,10 @@
         "Type": "Result",
         "Timestamp": { "$date": "2020-06-03T04:01:56Z" },
         "SourceProcessId": "solarPlant1",
-        "MessageId": "solarPlant1-1"
+        "MessageId": "solarPlant1-1",
+        "RealPower": 5.0,
+        "ReactivePower": 0.2,
+        "bus": "bus1"
     },
     {
         "SimulationId": "2020-06-03T04:01:52.345Z",
@@ -145,7 +148,10 @@
         "Type": "Result",
         "Timestamp": { "$date": "2020-06-03T04:02:56Z" },
         "SourceProcessId": "solarPlant1",
-        "MessageId": "solarPlant1-2"
+        "MessageId": "solarPlant1-2",
+        "RealPower": 8.0,
+        "ReactivePower": 0.5,
+        "bus": "bus1"
     },
     {
         "SimulationId": "2020-06-03T04:01:52.345Z",

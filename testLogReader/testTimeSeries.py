@@ -13,6 +13,8 @@ from LogReader.services import timeSeries
 from testLogReader import dataManager, testingUtils
 
 batteryMsgIds = [ 'battery1-1', 'battery2-1', 'battery1-2', 'battery2-2' ]
+solarPlantOkMsgIds = [ 'solarPlant1-1', 'solarPlant1-2' ]
+solarPlantMsgIds = solarPlantOkMsgIds +[ 'solarPlant1-3' ]
 battery3MsgIds = [ 'battery3-1', 'battery3-2' ]
 battery_1_3MsgIds = [ 'battery1-1', 'battery3-1', 'battery1-2', 'battery3-2' ]
 batteryMsgIdsMissing = [ 'battery1-1', 'battery1-2', 'battery2-2' ]
@@ -20,6 +22,8 @@ batteryMsgIdsMissing2 = [ 'battery1-1', 'battery2-1', 'battery2-2' ]
 chargePercentageAttr = 'batteryState.chargePercentage'
 capacityAttr = 'batteryState.capacity'
 batteryStateAttr = 'batteryState'
+realPowerAttr = 'RealPower'
+reactivePowerAttr = 'ReactivePower'
  
 testScenarios = [ 
     { 'name': 'battery state from battery 1 and 2',
@@ -32,6 +36,26 @@ testScenarios = [
      'testCreateTimeSeries': { 'fileType': 'json' },
      'testCreateCsvHeaders': { 'fileType': 'csv' },
      'testCreateCsv': { 'fileType': 'csv' } },
+    { 'name': 'real power from solar plant 1',
+     'timeSeriesParams': [ 
+         {'msgIds': solarPlantOkMsgIds,
+         'attrs': [ realPowerAttr ]}
+     ],
+     'testGetMessagesForNextEpoch': [[ 1, 2 ]],
+     'testGetEpochData': { 'fileType': 'json' },
+     'testCreateTimeSeries': { 'fileType': 'json'  },
+     'testCreateCsvHeaders': { 'fileType': 'csv' },
+     'testCreateCsv': { 'fileType': 'csv' } },
+    { 'name': 'real and reactive power from solar plant 1',
+     'timeSeriesParams': [ 
+         {'msgIds': solarPlantOkMsgIds,
+         'attrs': [ realPowerAttr, reactivePowerAttr ]}
+     ],
+     'testGetMessagesForNextEpoch': [[ 1, 2 ]],
+     'testGetEpochData': { 'fileType': 'json' },
+     'testCreateTimeSeries': { 'fileType': 'json' },
+     'testCreateCsvHeaders': { 'fileType': 'csv' },
+     'testCreateCsv': { 'fileType': 'csv' }},
     { 'name': 'charge percentage from battery 1 and 2',
      'timeSeriesParams': [ 
          {'msgIds': batteryMsgIds,
@@ -187,7 +211,13 @@ class TestTimeSeries(unittest.TestCase):
         return msgs, tsMsgs
     
     def getTestData(self, scenario):
-        tsMsgsLst = [ timeSeries.TimeSeriesMessages( params['attrs'],  self._getMessagesForIds( params['msgIds'] ) ) for params in scenario['timeSeriesParams'] ]   
+        tsMsgsLst = [ timeSeries.TimeSeriesMessages( params['attrs'],  self._getMessagesForIds( params['msgIds'] ) ) for params in scenario['timeSeriesParams'] ]
+        epochs = set()
+        for tsMsgs in tsMsgsLst:
+            epochs.update( [ msg[messages.epochNumAttr] for msg in tsMsgs.msgs ] )
+            
+        epochStartTimes = { msg[ messages.epochNumAttr ]: msg[ messages.epochStartAttr ] for msg in self._testData if msg[ messages.topicAttr ] == 'Epoch' and msg[ messages.epochNumAttr ] in epochs }
+                
         expected = scenario.get(self._testName)
         if expected != None and type( expected ) == dict and 'fileType' in expected:
             fileType = expected['fileType']
@@ -199,7 +229,7 @@ class TestTimeSeries(unittest.TestCase):
             else:
                 self._skipAsserts = True
                 
-        return timeSeries.TimeSeries( tsMsgsLst ), expected
+        return timeSeries.TimeSeries( tsMsgsLst, epochStartTimes ), expected
     
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testGetMessagesForNextEpoch']

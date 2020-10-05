@@ -4,11 +4,12 @@ Contains classes and methods for creating time series from messages of a simulat
 The out side entry point for this module is the getTimeSeries method.
 '''
 
-from typing import List, Union
+from typing import List, Union, Dict
 
 import dateutil
 from io import StringIO
 import csv
+from datetime import datetime
 
 from LogReader.db import messages
 from LogReader import utils
@@ -96,12 +97,13 @@ class TimeSeries(object):
     This class is used to create time series data from given messages.
     '''
 
-    def __init__(self, timeSeriesMessages : List[TimeSeriesMessages] ):
+    def __init__(self, timeSeriesMessages : List[TimeSeriesMessages], epochStartTimes: Dict[ int, datetime ] = None ):
         '''
         Specify the source data for the time series to be created.
         timeSeriesMessages: List of TimeSeriesMessage objects which determine the source data for the time series ie. messages and the attributes. 
         '''
         self._data = timeSeriesMessages
+        self._epochStartTimes = epochStartTimes
         self._dataRemaining = True # have all messages been processed
         # the time series will be constructed here.
         self._result = { 'TimeIndex': [] }
@@ -182,6 +184,11 @@ class TimeSeries(object):
                             # done time series found
                             break
                         
+                        elif self._isSimpleValue( source ):
+                            foundTimeSeries = True
+                            source = self._createTimeSeriesBlockFromSimpleValue( source, part )
+                            break
+                        
                     if foundTimeSeries:
                         # add the current result part to this epoch's result if it is not already there
                         if not attrParent.get( 'inEpochResult' ):
@@ -192,6 +199,8 @@ class TimeSeries(object):
                             attrParent['index'] = 0
                             # convert time index strings to datetime objects and add to the result.
                             attrParent['timeIndex'] = [ dateutil.parser.isoparse( date ) for date in source[timeIndexAttr] ]
+                            if source.get( 'fake' ) == True:
+                                attrParent['duplicate'] = True 
                         
                         # get the series part of the time series block    
                         series = source[seriesAttr]
@@ -224,7 +233,22 @@ class TimeSeries(object):
         '''
         Check if the given message part is a time series block.
         '''
-        return seriesAttr in value and timeIndexAttr in value
+        return isinstance( value, dict ) and seriesAttr in value and timeIndexAttr in value
+    
+    def _isSimpleValue(self, value) -> bool:
+        return type( value ) in [ str, bool, int, float ]
+    
+    def _createTimeSeriesBlockFromSimpleValue( self, value, attrName: str ) -> dict:
+        timeSeries = {}
+        timeSeries['fake'] = True
+        timeSeries[ timeIndexAttr ] = [ utils.dateToIsoString( self._epochStartTimes[ self._nextEpoch ] ) ]
+        timeSeries[ seriesAttr ] = {
+            attrName: {
+                seriesValueAttr: [ value ]
+            }
+        }
+        
+        return timeSeries
                             
     def _handleMissingDataForEpoch(self):
         '''
@@ -234,7 +258,7 @@ class TimeSeries(object):
         '''
         for data in self._epochResult:
             for attr in data:
-                if attr == 'index' or attr == 'timeIndex':
+                if attr == 'index' or attr == 'timeIndex' or attr == 'duplicate':
                     continue
                 
                 values = data[attr]['values']
@@ -283,7 +307,7 @@ class TimeSeries(object):
                 
                 # process each attribute under the item that has values
                 for key in item:
-                    if key in [ 'index', 'timeIndex' ]:
+                    if key in [ 'index', 'timeIndex', 'duplicate' ]:
                         continue
                     
                     attrData = item[key]
@@ -319,6 +343,9 @@ class TimeSeries(object):
             # contains temporary stuff used when creating the result that should now be removed.
             del result['index']
             del result['timeIndex']
+            duplicate = result.get( 'duplicate' )
+            if duplicate:
+                del result['duplicate'] 
             # process each actual time series attribute under this
             for attr in result:
                 # get the actual result values for the attribute
@@ -330,15 +357,18 @@ class TimeSeries(object):
                 # previously the attribute had the actual values and for each epoch source values for that epoch.
                 result[attr] = values 
             
-            # nothing more to process for this result part.    
-            return
+            # nothing more to process for this result part.
+            if duplicate:
+                result = values    
+            return result
         
         # nothing here to process go deeper in result structure excluding the time index.
         for key in result:
             if key != 'TimeIndex':
                 # clean this result part
-                self._cleanResult( result[key] )
-                
+                result[key] = self._cleanResult( result[key] )
+        
+        return result        
     def getResult(self) -> dict:
         '''
         After the time series has been created this is used to get the result.
@@ -482,6 +512,8 @@ def getTimeSeries( messageStore, simId: str, messageFilters: List[TimeSeriesMess
     '''
     # for each TimeSeriesMessageFilter a TimeSeriesMessages object will be created that has the corresponding messages.
     timeSeriesMsgsLst = []
+    minEpoch = None
+    maxEpoch = 0 
     for msgFilter in messageFilters:
         # get messages sorted by epoch number which is the sort order time series creation requires.
         msgs = messageStore.getMessages( simId, epoch = epoch, startEpoch = startEpoch, endEpoch = endEpoch, fromSimDate = fromSimDate, toSimDate = toSimDate, process = msgFilter.process, topic = msgFilter.topic, sortAttr = messages.epochNumAttr )
@@ -493,7 +525,20 @@ def getTimeSeries( messageStore, simId: str, messageFilters: List[TimeSeriesMess
         msgs = [ message for message in msgs if messages.epochNumAttr in message ]
         timeSeriesMsgsLst.append( TimeSeriesMessages( msgFilter.attrs, msgs ))
         
-    timeSeries = TimeSeries( timeSeriesMsgsLst )
+        if len( msgs ) > 0:
+            maxEpoch = max( maxEpoch, msgs[-1][ messages.epochNumAttr ])
+            if minEpoch == None:
+                minEpoch = msgs[0][messages.epochNumAttr]
+            
+            else:
+                minEpoch = min( minEpoch, msgs[0][messages.epochNumAttr] )
+    
+    epochStartTimes = {}
+    if minEpoch != None:
+        epochMsgs = messageStore.getMessages( simId, startEpoch = minEpoch, endEpoch = maxEpoch, topic = messages.epochTopic )
+        epochStartTimes = { msg[ messages.epochNumAttr ]: msg[ messages.epochStartAttr ] for msg in epochMsgs }    
+    
+    timeSeries = TimeSeries( timeSeriesMsgsLst, epochStartTimes )
     timeSeries.createTimeSeries()
     result = timeSeries.getResult()
     # if csv is required convert to csv otherwise just return the result as is.
