@@ -37,8 +37,8 @@
         "Timestamp": { "$date": "2020-06-03T04:01:56Z" },
         "SourceProcessId": "solarPlant1",
         "MessageId": "solarPlant1-1",
-        "RealPower": 5.0,
-        "ReactivePower": 0.2,
+        "RealPower": { "Value": 5.0, "UnitOfMeasure": "kW" },
+        "ReactivePower": { "Value": 0.2, "UnitOfMeasure": "kV.A{r}" },
         "bus": "bus1"
     },
     {
@@ -149,8 +149,8 @@
         "Timestamp": { "$date": "2020-06-03T04:02:56Z" },
         "SourceProcessId": "solarPlant1",
         "MessageId": "solarPlant1-2",
-        "RealPower": 8.0,
-        "ReactivePower": 0.5,
+        "RealPower": { "Value": 8.0, "UnitOfMeasure": "kW" }, 
+        "ReactivePower": { "Value": 0.5, "UnitOfMeasure": "kV.A{r}" },
         "bus": "bus1"
     },
     {

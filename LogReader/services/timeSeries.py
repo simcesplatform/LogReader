@@ -20,6 +20,9 @@ seriesAttr = 'Series'
 seriesValueAttr = 'Values'
 # name of the attribute containing the time index for the time series
 timeIndexAttr = 'TimeIndex'
+# quantity block attribute names
+quantityValueAttr = 'Value'
+quantityUnitAttr = 'UnitOfMeasure'
 
 class TimeSeriesMessages():
     '''
@@ -176,7 +179,7 @@ class TimeSeries(object):
                             # message has no data for this attribute part
                             break
                         
-                        # go deeper in result create or get the result part that will store this atribute's data
+                        # go deeper in result create or get the result part that will store this attribute's data
                         attrParent = attrParent.setdefault( part, {} )
                         
                         # is this message part a time series block
@@ -185,7 +188,7 @@ class TimeSeries(object):
                             # done time series found
                             break
                         
-                        # or is this a simple non time series block value 
+                        # or is this a simple non time series block value or a QuantityBlock 
                         elif self._isSimpleValue( source ):
                             foundTimeSeries = True
                             # for processing this value we will create a "fake" time series block from it
@@ -242,11 +245,12 @@ class TimeSeries(object):
     
     def _isSimpleValue(self, value) -> bool:
         '''
-        Check if the message part is a simple string, number or boolean value.
+        Check if the message part is a simple string, number, boolean or QuantityBlock value.
         '''
-        return type( value ) in [ str, bool, int, float ]
+        return (type( value ) in [ str, bool, int, float ] or 
+            (isinstance( value, dict ) and quantityValueAttr in value and quantityUnitAttr in value) )
     
-    def _createTimeSeriesBlockFromSimpleValue( self, value: Union[ int, float, str, bool ], attrName: str ) -> dict:
+    def _createTimeSeriesBlockFromSimpleValue( self, value: Union[ int, float, str, bool, dict ], attrName: str ) -> dict:
         '''
         Creates a "fake" time series block from the given value stored under the given attribute name.
         '''
@@ -260,7 +264,8 @@ class TimeSeries(object):
         # measurement unit is not required here 
         timeSeries[ seriesAttr ] = {
             attrName: {
-                seriesValueAttr: [ value ]
+                # value is either a string, number, boolean or quantity block containing a value.
+                seriesValueAttr: [ value if not isinstance( value, dict ) else value[ quantityValueAttr ] ]
             }
         }
         
