@@ -1,6 +1,6 @@
 # LogReader
 
-LogReader is a component of the ProCemPlus simulation platform. It is a part of the logging system. It is used to access the message database on a higher level. It provides a RESTful HTTP based API for accessing information about executed simulations, their messages and timeseries constructed from the message data. The API is further documented in [api.md](api.md).
+LogReader is a component of the Simces simulation platform. It is a part of the logging system. It is used to access the message database on a higher level. It provides a RESTful HTTP based API for accessing information about executed simulations, their messages and timeseries constructed from the message data. The API is further documented in [api.md](api.md). It also provides a simple web based user interface for making API queries available from the application root path.
 
 ## Implementation status
 
@@ -120,6 +120,7 @@ The LogReader code is in the LogReader package. The following is a short overvie
     - simulations.py: Request handlers related to simulations.
     - messages.py: Request handlers related to messages.
     - timeSeries.py: Request handlers for time series.
+    - static.py: Serves the web ui.
 - services
     - timeSeries.py: Code related to creation of time series data from messages.  
 
@@ -148,7 +149,7 @@ After the test output is complete quit with ctrl-c and remove the containers:
     
 Note: MongoDB logging is disabled in this compose file.
 
-There are three kinds of tests:
+There are four kinds of tests:
 
 1. database tests: They test stuff in the LogReader.db package for example testLogrEader.testSimulations.
 2. time series tests which test the time series creation code. They are located at testLogReader.testTimeSeries
