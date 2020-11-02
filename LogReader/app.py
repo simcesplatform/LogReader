@@ -16,6 +16,7 @@ import waitress
 from LogReader.controllers.simulations import SimController
 from LogReader.controllers.messages import MsgController
 from LogReader.controllers.timeSeries import TimeSeriesController
+from LogReader.controllers.static import StaticSite
 from LogReader.db import simulations, messages
 from LogReader import utils
 import LogReader
@@ -52,6 +53,11 @@ msgController = MsgController( messages )
 api.add_route( '/simulations/{simId}/messages', msgController )
 timeSeriesController = TimeSeriesController( messages )
 api.add_route( '/simulations/{simId}/timeseries', timeSeriesController )
+# add route for the user interface consisting of static files 
+staticPrefix = '/' # ui available from the root path
+static = StaticSite( staticPrefix ) # use the static controller for delivering the files.
+# note works only on one level e.g. /foo/bar.html does not work.
+api.add_route( staticPrefix +'{file}', static )
 
 if __name__ == '__main__':
     # this is main file launch the application

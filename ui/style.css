@@ -1,0 +1,37 @@
+.main_table {
+    border-style: solid;
+    border-width: 5px;
+    border-collapse: collapse;
+}
+
+.query_table {
+    width: 100%;
+    border-spacing: 10px 0px;
+}
+
+.latest_query_table {
+    border-spacing: 10px 5px;
+}
+
+.query_header {
+    text-align: center;
+}
+
+.main_td {
+    border-style: solid;
+    border-width: 5px;
+}
+
+.query_td {
+    width: 50%;
+}
+
+.button_td {
+    text-align: center;
+    padding: 10px;
+}
+
+.query_span {
+    display: block;
+    white-space: normal;
+}

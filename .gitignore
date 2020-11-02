@@ -1,5 +1,4 @@
 **/*.pyc
 **/__pycache__
-*.html
 .*
 testLogReader/data/*actual_result.*

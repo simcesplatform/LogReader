@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Logging System API</title>
+        <link rel="stylesheet" href="style.css">
+        <script src="main.js">
+        </script>
+    </head>
+
+    <body>
+        <h1>ProCemPlus Simulation Platform - Logging System API</h1>
+        <table class="main_table" id="main_table">
+            <tr>
+                <td class="main_td">
+                    <table class="query_table">
+                        <tr>
+                            <th class="query_header">
+                                <h3>Get metadata for all simulations</h3>
+                            </th>
+                        </tr>
+                        <tr>
+                            <td class="button_td">
+                                <form>
+                                    <input type="button" onClick="getSimulations()" value="Send query">
+                                </form>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+
+                <td class="main_td">
+                    <table class="query_table">
+                        <tr>
+                            <th class="query_header" colspan="2">
+                                <h3>Get metadata for specific simulation</h3>
+                            </th>
+                        </tr>
+                        <tr>
+                            <td class="query_td"><label for="simulations_simulationId">Simulation id:</label></td>
+                            <td class="query_td"><input type="text" id="simulations_simulationId" size="30"></td>
+                        </tr>
+                        <tr>
+                            <td class="button_td" colspan="2">
+                                <input type="button" onClick="getSimulation()" value="Send query">
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="main_td">
+                    <table class="query_table">
+                        <tr>
+                            <th class="query_header" colspan="2">
+                                <h3>Get messages for specific simulation</h3>
+                            </th>
+                        </tr>
+                        <tr>
+                            <td class="query_td"><label for="messages_simulationId">Simulation id:</label></td>
+                            <td class="query_td"><input type="text" id="messages_simulationId" size="30"></td>
+                        </tr>
+                        <tr>
+                            <td class="query_td"><label for="messages_topic">Topic:</label></td>
+                            <td class="query_td"><input type="text" id="messages_topic" size="30"></td>
+                        </tr>
+                        <tr>
+                            <td class="query_td"><label for="messages_process">Process:</label></td>
+                            <td class="query_td"><input type="text" id="messages_process" size="30"></td>
+                        </tr>
+                        <tr>
+                            <td class="query_td"><label for="messages_epoch">Epoch:</label></td>
+                            <td class="query_td"><input type="number" id="messages_epoch" min="0"></td>
+                        </tr>
+                        <tr>
+                            <td class="query_td"><label for="messages_startEpoch">Start epoch:</label></td>
+                            <td class="query_td"><input type="number" id="messages_startEpoch" min="0"></td>
+                        </tr>
+                        <tr>
+                            <td class="query_td"><label for="messages_endEpoch">End epoch:</label></td>
+                            <td class="query_td"><input type="number" id="messages_endEpoch" min="0"></td>
+                        </tr>
+                        <tr>
+                            <td class="query_td"><label for="messages_fromSimDate">From simulation date:</label></td>
+                            <td class="query_td"><input type="text" id="messages_fromSimDate" size="30"></td>
+                        </tr>
+                        <tr>
+                            <td class="query_td"><label for="messages_toSimDate">To simulation date:</label></td>
+                            <td class="query_td"><input type="text" id="messages_toSimDate" size="30"></td>
+                        </tr>
+                        <tr>
+                            <td class="query_td"><label for="messages_onlyWarnings">Include only warnings:</label></td>
+                            <td class="query_td"><input type="checkbox" id="messages_onlyWarnings" value="false"></td>
+                        </tr>
+                        <tr>
+                            <td class="button_td" colspan="2">
+                                <input type="button" onClick="getSimulationMessages()" value="Send query">
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+
+                <td class="main_td">
+                    <table class="query_table">
+                        <tr>
+                            <th class="query_header" colspan="2">
+                                <h3>Get time series for specific simulation</h3>
+                            </th>
+                        </tr>
+                        <tr>
+                            <td class="query_td"><label for="timeseries_simulationId">Simulation id:</label></td>
+                            <td class="query_td"><input type="text" id="timeseries_simulationId" size="30"></td>
+                        </tr>
+                        <tr>
+                            <td class="query_td"><label for="timeseries_attrs">Attributes:</label></td>
+                            <td class="query_td"><input type="text" id="timeseries_attrs" size="30"></td>
+                        </tr>
+                        <tr>
+                            <td class="query_td"><label for="timeseries_topic">Topic:</label></td>
+                            <td class="query_td"><input type="text" id="timeseries_topic" size="30"></td>
+                        </tr>
+                        <tr>
+                            <td class="query_td"><label for="timeseries_process">Process:</label></td>
+                            <td class="query_td"><input type="text" id="timeseries_process" size="30"></td>
+                        </tr>
+                        <tr>
+                            <td class="query_td"><label for="timeseries_epoch">Epoch:</label></td>
+                            <td class="query_td"><input type="number" id="timeseries_epoch" min="0"></td>
+                        </tr>
+                        <tr>
+                            <td class="query_td"><label for="timeseries_startEpoch">Start epoch:</label></td>
+                            <td class="query_td"><input type="number" id="timeseries_startEpoch" min="0"></td>
+                        </tr>
+                        <tr>
+                            <td class="query_td"><label for="timeseries_endEpoch">End epoch:</label></td>
+                            <td class="query_td"><input type="number" id="timeseries_endEpoch" min="0"></td>
+                        </tr>
+                        <tr>
+                            <td class="query_td"><label for="timeseries_fromSimDate">From simulation date:</label></td>
+                            <td class="query_td"><input type="text" id="timeseries_fromSimDate" size="30"></td>
+                        </tr>
+                        <tr>
+                            <td class="query_td"><label for="timeseries_toSimDate">To simulation date:</label></td>
+                            <td class="query_td"><input type="text" id="timeseries_toSimDate" size="30"></td>
+                        </tr>
+                        <tr>
+                            <td class="query_td"><label for="timeseries_format">Format:</label></td>
+                            <td class="query_td">
+                                <input type="radio" name="timeseries_format" value="json" checked>
+                                <label for="timeseries_format">JSON</label>
+                                <input type="radio" name="timeseries_format" value="csv">
+                                <label for="timeseries_format">CSV</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="button_td" colspan="2">
+                                <input type="button" onClick="getSimulationTimeseries()" value="Send query">
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+        <table class="latest_query_table" id="latest_query_table">
+            <tr>
+                <td><strong>Latest query:</strong></td>
+                <td><span class="query_span" id="latest_query"></span></td>
+            </tr>
+        </table>
+    </body>
+</html>
