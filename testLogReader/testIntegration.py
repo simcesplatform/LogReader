@@ -138,6 +138,9 @@ class TestWebServer(unittest.TestCase):
         testingUtils.checkMessages( self, result.json(), expected )
         
     def testGetTimeSeriesCsvForEpoch(self):
+        '''
+        Test get time series.
+        ''' 
         result = requests.get( f'{self._baseURL}/simulations/{dataManager.testMsgSimId}/timeseries', params = { 'epoch': 2, 'attrs': 'batteryState.chargePercentage,batteryState.capacity', 'topic': 'energy.storage.state', 'format': 'csv' } )
         self.assertEqual( result.status_code, 200 )
         testName = 'testGetTimeSeriesCsvForEpoch'
@@ -147,7 +150,22 @@ class TestWebServer(unittest.TestCase):
         expected = dataManager.readFile( expectedName )
         testingUtils.checkCsv( self, result.text, expected )
         
+    def testGetUi(self):
+        '''
+        Check that we can get user interface files.
+        '''
+        # file path in url and expected content type
+        filesAndTypes = {
+            '': 'text/html',
+            '/main.js': 'application/javascript',
+            '/style.css': 'text/css'
+        }
         
+        for file, contentType in filesAndTypes.items():
+            with self.subTest( file = file ):
+                resp = requests.get( f'{self._baseURL}{file}' )
+                self.assertEqual( resp.status_code, 200 )
+                self.assertEqual( resp.headers['content-type'], contentType )
 
 if __name__ == "__main__":
     # execute tests
