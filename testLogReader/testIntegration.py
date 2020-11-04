@@ -143,9 +143,11 @@ class TestWebServer(unittest.TestCase):
         ''' 
         result = requests.get( f'{self._baseURL}/simulations/{dataManager.testMsgSimId}/timeseries', params = { 'epoch': 2, 'attrs': 'batteryState.chargePercentage,batteryState.capacity', 'topic': 'energy.storage.state', 'format': 'csv' } )
         self.assertEqual( result.status_code, 200 )
+        # save actual results to file
         testName = 'testGetTimeSeriesCsvForEpoch'
         actualName = testingUtils.getTestDataResultFileName( testName, '', True, 'csv' )
         dataManager.writeFile( actualName, result.text )
+        # read expected results from file and compare to actual results.
         expectedName = testingUtils.getTestDataResultFileName(testName, '', False, 'csv' )
         expected = dataManager.readFile( expectedName )
         testingUtils.checkCsv( self, result.text, expected )

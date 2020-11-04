@@ -1,18 +1,24 @@
+# -*- coding: utf-8 -*-
 '''
-Created on 10.9.2020
-
-@author: hylli
+Tests for the time series api.
 '''
 import unittest
 from testLogReader import dataManager, testingUtils
 
+# url path for creating time series from test messages.
 path = f'/simulations/{dataManager.testMsgSimId}/timeseries'
 
+# specify test scenarios for the time series api
+# for each scenario time series is fetched with query parameters from the scenario 
+# and checked against expected results read from file. 
 scenarios = [
+    # scenario name is used to identify scenario result files.
     { 'name': 'battery state for battery 1',
+     # define HTTP request query parameters used to get the time series.
      'query': { 'attrs': 'batteryState',
                'process': 'battery1', 
                'topic': 'energy.storage.state' },
+     # define expected HTTP status code
      'status': 200 },
     { 'name': 'real power for solar plant 1',
      'query': { 'attrs': 'RealPower',
@@ -78,6 +84,9 @@ scenarios = [
     ]
 
 class TestTimeSeriesApi( testingUtils.ApiTest ):
+    '''
+    Tests for time series API.
+    '''
     
     @classmethod
     def setUpClass(cls):
@@ -94,19 +103,31 @@ class TestTimeSeriesApi( testingUtils.ApiTest ):
         dataManager.deleteTestMsgData()
         
     def testApiWithScenarios(self):
+        '''
+        Test getting time series from the API with different test scenarios which have different query parameters and expected results.
+        Each scenario is tested for both json and csv formats
+        Actual results for each scenario are saved to a file and compared to expected results read from file.
+        '''
         for scenario in scenarios:
             for dataFormat in [ 'json', 'csv' ]:
                 with self.subTest( scenario = scenario['name' ], format = dataFormat ):
                     self._checkScenario( scenario, dataFormat )
                     
-    def _checkScenario(self, scenario, dataFormat ):
+    def _checkScenario(self, scenario: dict, dataFormat: str ):
+        '''
+        Check given scenario with the given data format json or csv.
+        Actual results are saved to a file and compared to expected results read from file.
+        '''
+        # copy original scenario query parameters since they would otherwise be modified
         params = dict( scenario['query'] )
         params['format'] = dataFormat
         result = self.simulate_get( path, params = params )
         self.assertEqual( result.status_code, scenario['status'], 'Did not get the expected HTTP status code.' )
         if result.status_code != 200 or scenario['status'] != 200:
+            # no need to check response body
             return
         
+        # save the actual results we got to a file
         testName = 'testTimeSeriesApi'
         actualResultName = testingUtils.getTestDataResultFileName( testName, scenario['name'], True, dataFormat )
         if dataFormat == 'json':
@@ -116,8 +137,11 @@ class TestTimeSeriesApi( testingUtils.ApiTest ):
             resultData = result.text
             
         dataManager.writeFile( actualResultName, resultData )
+        
+        # read expected results from file
         resultName = testingUtils.getTestDataResultFileName( testName, scenario['name'], False, dataFormat )
         expected = dataManager.readFile( resultName )
+        # compare actual result and expected
         if dataFormat == 'json':
             self.assertEqual( resultData, expected )
             
@@ -125,6 +149,9 @@ class TestTimeSeriesApi( testingUtils.ApiTest ):
             testingUtils.checkCsv( self, resultData, expected )
             
     def testSimulationNotFound(self):
+        '''
+        Test that we get correct HTTP status when trying to get time series for simulation which does not exist.
+        '''
         result = self.simulate_get( '/simulations/foo/timeseries', params = { 'attrs': 'batteryState', 'topic': 'energy.storage.state' })
         self.assertEqual( result.status_code, 404, 'Got unexpected status code.' )
         

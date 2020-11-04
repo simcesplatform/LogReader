@@ -12,6 +12,7 @@ import pathlib
 from functools import partial
 import csv
 import io
+from typing import Union
 
 from LogReader.db import db, simulations, messages
 
@@ -23,11 +24,19 @@ testDataDir = pathlib.Path(__file__).parent.absolute() / 'data'
 # id of simulation for which there are test messages.
 testMsgSimId = '2020-06-03T04:01:52.345Z'
 
-def writeFile( fileName, data ):
+def writeFile( fileName: str, data: Union[str, dict] ):
+    '''
+    Write given data to file with given name in the test data directory.
+    Data can be a string containing csv or dict which is converted to json.
+    'fileName should have extension json or csv.
+    '''
     filePath = testDataDir / fileName
+    # get file type extension used to determine how data is saved
     fileType = filePath.suffix[1:]
     with open( filePath, 'w' ) as file:
         if fileType == 'json':
+            # we want to be able to automatically convert datetime objects to and from json so they can be compared if needed.
+            # so we want that json.dump uses jsonutil.default with specific options to write the file 
             opt = json_util.JSONOptions(strict_number_long=False, datetime_representation=json_util.DatetimeRepresentation.ISO8601, strict_uuid=False, json_mode=0, document_class=dict, tz_aware=True,  unicode_decode_error_handler='strict'  )
             default = partial( json_util.default, json_options = opt ) 
             json.dump( data, file, default = default, indent = 3 )
@@ -35,9 +44,11 @@ def writeFile( fileName, data ):
         elif fileType == 'csv':
             file.write( data )
 
-def readFile( fileName, csvDelimiter = ';' ):
+def readFile( fileName: str, csvDelimiter: str = ';' ) -> Union[dict, csv.DictReader]:
     '''
     Read the given file from test data directory.
+    If the file extension is json contents are read to a dict.
+    If csv they are read into a csv DictReader using the given delimiter.
     '''
     filePath = testDataDir / fileName
     fileType = filePath.suffix[1:]
@@ -56,7 +67,7 @@ def readFile( fileName, csvDelimiter = ';' ):
         
     return data
     
-def insertDataFromFile( fileName, collectionName ):
+def insertDataFromFile( fileName: str, collectionName: str ) -> dict:
     '''
     Inserts data from a file from the test data directory whose name is given to the given collection.
     Returns a dict containing the test data.
@@ -68,7 +79,7 @@ def insertDataFromFile( fileName, collectionName ):
     collection.insert_many( testItems )
     return testItems
 
-def insertTestSimData():
+def insertTestSimData() -> dict:
     '''
     Inserts the test simulation data.
     Returns a dict containing the test data.
@@ -81,13 +92,17 @@ def deleteTestSimData():
     '''
     simCollection.drop()
     
-def insertTestMsgData():
+def insertTestMsgData() -> dict:
     '''
     Inserts test messages to db.
+    Returns inserted data.
     '''
     return insertDataFromFile( 'messages1.json', messages._getMessageCollectionName( testMsgSimId ))
 
 def deleteTestMsgData():
+    '''
+    Delete test messages from db.
+    '''
     db[messages._getMessageCollectionName( testMsgSimId ) ].drop()
 
 if __name__ == '__main__':
