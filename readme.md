@@ -1,6 +1,6 @@
 # LogReader
 
-LogReader is a component of the Simces simulation platform. It is a part of the logging system. It is used to access the message database on a higher level. It provides a RESTful HTTP based API for accessing information about executed simulations, their messages and timeseries constructed from the message data. The API is further documented in [api.md](api.md). It also provides a simple web based user interface for making API queries available from the application root path.
+LogReader is a component of the Simces simulation platform. It is a part of the logging system. It is used to access the message database on a higher level. It provides a RESTful HTTP based API for accessing information about executed simulations, their messages and timeseries constructed from the message data. The API is further documented in [api.md](api.md). It also provides a simple web based user interface for making API queries available from the application root path e.g. if the LogReader is running on localhost port 8080 the ui is available on http:://localhost:8080.
 
 ## Implementation status
 
@@ -109,7 +109,7 @@ web framework. MongoDB is used with the [Pymongo](https://pymongo.readthedocs.io
 
 The LogReader code is in the LogReader package. The following is a short overview of its contents:
 
-- \_\_init\_\_.py: AT least currently just initializes logging.
+- \_\_init\_\_.py: Initializes logging.
 - app.py: Creates the falcon application including configuring its routes.
 - utils.py: miscellaneous helper methods.
 - db: Pakcage for dealing with MongoDB.
