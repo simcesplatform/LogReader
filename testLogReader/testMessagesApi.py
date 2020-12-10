@@ -3,13 +3,16 @@
 Tests for get messages API
 '''
 import unittest
+import json
 
 from LogReader.db import messages
+from LogReader import utils
 
 from testLogReader import dataManager, testingUtils
 
 # URL path for getting test messages
 path = f'/simulations/{dataManager.testMsgSimId}/messages'
+invalidPath = path +'/invalid'
 
 class TestMessagesApi( testingUtils.ApiTest ):
     
@@ -19,6 +22,7 @@ class TestMessagesApi( testingUtils.ApiTest ):
         Adds the test message data to the db
         '''
         cls._testData = dataManager.insertTestMsgData()
+        cls._testInvalidData = dataManager.insertTestInvalidMsgData()
         
     @classmethod
     def tearDownClass(cls):
@@ -26,6 +30,7 @@ class TestMessagesApi( testingUtils.ApiTest ):
         Removes the test message data from the db.
         '''
         dataManager.deleteTestMsgData()
+        dataManager.deleteTestInvalidMsgData()
 
     def testGetAllMessages(self):
         '''
@@ -155,7 +160,35 @@ class TestMessagesApi( testingUtils.ApiTest ):
         result = self.simulate_get( path, params = { 'epoch': 3, 'onlyWarnings': 'true' })
         expected = [ msg for msg in self._testData if messages.warningsAttr in msg and msg[messages.epochNumAttr] == epoch  ] 
         testingUtils.checkMessages( self, result.json, expected )
-    
+        
+    def testGetAllInvalidMessages(self):
+        '''
+        Test we can get all invalid messages.
+        '''
+        result = self.simulate_get(  invalidPath )
+        self.assertEqual( result.status_code ,200 )
+        # result json has timestamp as string and test data as datetime so test data has to be converted
+        expected = json.dumps( self._testInvalidData, default = utils.jsonSerializeDate )
+        expected = json.loads( expected )
+        self.assertEqual( result.json, expected)
+        
+    def testGetInvalidMessagesSimulationNotFound(self):
+        '''
+        Check that a 404 response is received when getting messages with simulation id that does not exist.
+        ''' 
+        result = self.simulate_get( '/simulations/foo/messages/invalid' )
+        self.assertEqual( result.status_code, 404 )
+        
+    def testGetInvalidMessagesByTopic(self):
+        '''
+        Test we can get invalid messages by topic.
+        '''
+        result = self.simulate_get(  invalidPath, params = { 'topic': 'Status.*' } )
+        self.assertEqual( result.status_code ,200 )
+        expected = json.dumps( [self._testInvalidData[1]], default = utils.jsonSerializeDate )
+        expected = json.loads( expected )
+        self.assertEqual( result.json, expected)
+
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testGetAllMessages']
     unittest.main()

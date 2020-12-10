@@ -77,6 +77,9 @@ def insertDataFromFile( fileName: str, collectionName: str ) -> dict:
     collection = db[collectionName]
     collection.drop()
     collection.insert_many( testItems )
+    for item in testItems:
+        del item['_id']
+        
     return testItems
 
 def insertTestSimData() -> dict:
@@ -105,16 +108,31 @@ def deleteTestMsgData():
     '''
     db[messages._getMessageCollectionName( testMsgSimId ) ].drop()
 
+def insertTestInvalidMsgData() -> dict:
+    '''
+    Inserts invalid test messages to db.
+    Returns inserted data.
+    '''
+    return insertDataFromFile( 'invalid_messages.json', messages._getInvalidMessageCollectionName( testMsgSimId ))
+
+def deleteTestInvalidMsgData():
+    '''
+    Delete invalid test messages from db.
+    '''
+    db[messages._getInvalidMessageCollectionName( testMsgSimId ) ].drop()
+
 if __name__ == '__main__':
     # insert or delete the test data
     if len( sys.argv ) < 2:
         insertTestSimData()
         insertTestMsgData()
+        insertTestInvalidMsgData()
         print( 'Inserted test simulation and message data.' )
         
     elif sys.argv[1] == '-d':
         deleteTestSimData()
         deleteTestMsgData()
+        deleteTestInvalidMsgData()
         print( 'Deleted test simulations and messages from database.' )
         
     else:

@@ -17,11 +17,13 @@ class TestMessages(unittest.TestCase):
     def setUpClass(cls):
         # insert test data before tests are executed
         cls._testData = dataManager.insertTestMsgData()
+        cls._testInvalidData = dataManager.insertTestInvalidMsgData()
     
     @classmethod
     def tearDownClass(cls):
         # after tests are executed delete test messages
         dataManager.deleteTestMsgData()
+        dataManager.deleteTestInvalidMsgData()
 
     def setUp(self):
         pass
@@ -218,5 +220,26 @@ class TestMessages(unittest.TestCase):
         expected = [ msg for msg in self._testData if messages.warningsAttr in msg and msg[messages.epochNumAttr] == epoch  ] 
         testingUtils.checkMessages( self, result, expected )
         
+    def testGetInvalidMessagesSimulationNotFound(self):
+        '''
+        Test that we get None with id of a simulation that does not exist.
+        '''
+        result = messages.getInvalidMessages( 'foo' )
+        self.assertIsNone( result )
+        
+    def testGetInvalidMessages(self):
+        '''
+        Test that we can get all invalid messages for a simulation.
+        '''
+        result = messages.getInvalidMessages(dataManager.testMsgSimId)
+        self.assertEqual( result, self._testInvalidData )
+        
+    def testGetInvalidMessagesByTopic(self):
+        '''
+        Test that we can get invalid messages by topic.
+        '''
+        result = messages.getInvalidMessages(dataManager.testMsgSimId, 'Status.*')
+        self.assertEqual( result, [self._testInvalidData[1]])
+     
 if __name__ == "__main__":
     unittest.main()

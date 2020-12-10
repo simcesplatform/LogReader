@@ -161,6 +161,31 @@
                     </table>
                 </td>
             </tr>
+            <tr>
+                <td class="main_td">
+                    <table class="query_table">
+                        <tr>
+                            <th class="query_header" colspan="2">
+                                <h3>Get invalid messages for specific simulation</h3>
+                            </th>
+                        </tr>
+                        <tr>
+                            <td class="query_td"><label for="invalid_messages_simulationId">Simulation id:</label></td>
+                            <td class="query_td"><input type="text" id="invalid_messages_simulationId" size="30"></td>
+                        </tr>
+                        <tr>
+                            <td class="query_td"><label for="invalid_messages_topic">Topic:</label></td>
+                            <td class="query_td"><input type="text" id="invalid_messages_topic" size="30"></td>
+                        </tr>
+                        <tr>
+                            <td class="button_td" colspan="2">
+                                <input type="button" onClick="getSimulationInvalidMessages()" value="Send query">
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+                <td class="main_td"></td>
+            </tr>
         </table>
         <table class="latest_query_table" id="latest_query_table">
             <tr>

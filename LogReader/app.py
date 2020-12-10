@@ -50,7 +50,8 @@ api.add_route( '/simulations/{simId}', simController, suffix = 'simulation' )
 # Add route for getting messages for simulation
 # Give the messages controller the messages db module as the source for messages.
 msgController = MsgController( messages )
-api.add_route( '/simulations/{simId}/messages', msgController )
+api.add_route( '/simulations/{simId}/messages', msgController, suffix = 'messages' )
+api.add_route( '/simulations/{simId}/messages/invalid', msgController, suffix = 'invalid_messages' )
 timeSeriesController = TimeSeriesController( messages )
 api.add_route( '/simulations/{simId}/timeseries', timeSeriesController )
 # add route for the user interface consisting of static files 

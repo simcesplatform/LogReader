@@ -46,6 +46,18 @@ function getSimulationMessages() {
     window.open(fullUrl);
 }
 
+function getSimulationInvalidMessages() {
+    const simulationId = document.getElementById("invalid_messages_simulationId").value;
+    const topic = document.getElementById("invalid_messages_topic").value;
+    const url = getHostname() + "/simulations/" + simulationId + "/messages/invalid?";
+    query_params = []
+    if (topic !== "") query_params.push("topic=" + topic.replace(/#/g, "%23"));
+    const fullUrl = url + query_params.join("&");
+
+    updateLatestQuery(fullUrl);
+    window.open(fullUrl);
+}
+
 function getSimulationTimeseries() {
     const simulationId = document.getElementById("timeseries_simulationId").value;
     const attrs = document.getElementById("timeseries_attrs").value;

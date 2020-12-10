@@ -200,6 +200,60 @@ Get messages that process solarPlant1 has published to topic energy.production.s
 ]
 ```
 
+## Get invalid messages for simulation run
+
+method: GET  
+path: /simulations/{simulationId}/messages/invalid
+
+Returns invalid messages from the given simulation run.
+
+### Request parameters
+
+- simulationId (string, path, required): Id of the simulation run messages are fetched from.
+- topic (string, query): Return invalid messages published to the given topic. Supports the same notation that is used when subscribing to the topics i.e. the same wildcard mechanism including the * and # characters.
+
+### Response
+
+List of invalid messages. The messages will be sorted in ascending order by timestamp. The following attributes can be  available for each message:
+
+- Timestamp: Timestamp from the message if the message had a valid timestamp. Otherwise this is a timestamp added when the message was stored to the database.
+- Topic: The topic the message was published to.
+- InvalidMessage: The message itself if it was valid json.
+- InvalidMessageJson: Message as a string if the message could not be parsed as json.   
+
+### Example
+
+Get all invalid messages for simulation with id 2020-06-03T04:01:52.345Z. 
+
+#### Request
+
+    http://localhost:8080/simulations/2020-06-03T04:01:52.345Z/messages/invalid
+
+#### Response
+
+```
+[
+  {
+    "Timestamp": "2020-06-03T04:01:53Z",
+    "Topic": "Epoch",
+    "InvalidMessage": {
+      "EndTime": "2020-06-03T14:00:00Z",
+      "EpochNumber": 1,
+      "MessageId": "SimulationManager-2",
+      "SourceProcessId": "SimulationManager",
+      "StartTime": "2020-06-03T13:00:00Z",
+      "Timestamp": "2020-06-03T04:01:53Z",
+      "Type": "Epoch"
+    }
+  },
+  {
+    "Timestamp": "2020-06-03T04:01:54Z",
+    "Topic": "Status.Ready",
+    "InvalidMessageJson": "Ready"
+  }
+]
+```
+
 ## Get simple timeseries for simulation
 
 method: GET  

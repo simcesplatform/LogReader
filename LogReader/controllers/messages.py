@@ -23,7 +23,7 @@ class MsgController(object):
         '''
         self._messageStore = messageStore
     
-    def on_get(self, req, resp, simId ):
+    def on_get_messages(self, req, resp, simId ):
         '''
         Get messages for simulation:
         simId: Simulation id from the URL path.
@@ -33,6 +33,19 @@ class MsgController(object):
         result = self._messageStore.getMessages( simId, **params )
         # result None means that there is no simulation with the id (no corresponding mongodb collection for the messages)
         if result == None:
+            raise falcon.HTTPNotFound( title = 'Simulation not found.', description = f'Simulation with id {simId} not found.' )
+        
+        resp.media = result
+        
+    def on_get_invalid_messages(self, req, resp, simId):
+        '''
+        Get invalid messages for simulation:
+        simId: Simulation id from the URL path.
+        '''
+        log.debug( f'Get invalid messages for simulation with id {simId} with parameters {req.params}.' )
+        result = self._messageStore.getInvalidMessages( simId, topic = req.params.get( 'topic' ) )
+        # result None means that there is no simulation with the id
+        if result is None:
             raise falcon.HTTPNotFound( title = 'Simulation not found.', description = f'Simulation with id {simId} not found.' )
         
         resp.media = result

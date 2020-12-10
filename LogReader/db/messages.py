@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 '''
-Methods for getting messages from the database.
+Methods for getting messages and invalid messages from the database.
 '''
 
 import logging
+from typing import Union, List
 
 import pymongo
 
@@ -24,12 +25,19 @@ log = logging.getLogger( __name__ )
 
 # all simulation message collection names start with the same string
 collectionNamePrefix = 'simulation_'
+invalidMsgCollectionNamePrefix = 'invalid_' 
 
 def _getMessageCollectionName( simId ): 
     '''
     Returns the name of the collection where the messages of the simulation run, whose id is given, are stored.
     '''
     return collectionNamePrefix +simId
+
+def _getInvalidMessageCollectionName( simId ): 
+    '''
+    Returns the name of the collection where the invalid messages of the simulation run, whose id is given, are stored.
+    '''
+    return invalidMsgCollectionNamePrefix +_getMessageCollectionName( simId )
 
 def getMessages( simId, epoch  = None, startEpoch = None, endEpoch = None, process = None, onlyWarnings = False, toSimDate = None, fromSimDate = None, topic = None, sortAttr = timestampAttr ):
     '''
@@ -47,13 +55,12 @@ def getMessages( simId, epoch  = None, startEpoch = None, endEpoch = None, proce
     Returns a list of dictionaries. None if there is no collection for the messages.
     '''
     log.debug( f'Get messages for simulation {simId} with parameters epoch: {epoch}, startEpoch: {startEpoch}, endEpoch: {endEpoch}, process: {process}, onlyWarnings: {onlyWarnings}, fromSimDate: {fromSimDate}, toSimDate: {toSimDate} and topic: {topic}.' )
-    # name of the mongodb collection containing messages for the simulation
-    collectionName = _getMessageCollectionName( simId )
-    # check if the collection exists at all
-    if len( db.list_collection_names( filter = { 'name': collectionName } ) ) == 0:
-        log.debug( f'No collection with name {collectionName}.')
+    # check if the simulation exists 
+    if not _simulationExists( simId ):
         return None
     
+    # name of the mongodb collection containing messages for the simulation
+    collectionName = _getMessageCollectionName( simId )
     query = {} # build the message query here
     if fromSimDate or toSimDate:
         # get the number of the first and last epochs that contain the sim dates.
@@ -91,6 +98,40 @@ def getMessages( simId, epoch  = None, startEpoch = None, endEpoch = None, proce
         result.sort( sortAttr, pymongo.ASCENDING )
     
     return list( result ) 
+
+def getInvalidMessages( simId: str, topic: str = None  ) -> Union[List[dict], None]:
+    '''
+    Get invalid messages for simulation.
+    simId: Id of the simulation.
+    topic: Get invalid messages for given topic. Supports the * and # wildcards. Can be None.
+    Returns list of message dictionaries or None if simulation with id is not found.
+    '''
+    log.debug(f'Getting invalid messages for simulation {simId} with topic = {topic}.')
+    if not _simulationExists( simId ):
+        return None
+    
+    query = {}
+    if topic is not None:
+        query[topicAttr] = { '$regex': _topicPatternToRegex( topic ) }
+    
+    collectionName = _getInvalidMessageCollectionName(simId)
+    log.debug( f'Getting invalid messages from collection {collectionName} with query: {query}.')
+    result = db[ collectionName ].find( query, { '_id': 0 } )
+    result.sort( timestampAttr, pymongo.ASCENDING )
+    return list( result )
+
+def _simulationExists( simId: str ) -> bool:
+    '''
+    Check if simulation with the given id exists by checking if there is a messages collection for it.
+    '''
+    # name of the mongodb collection containing messages for the simulation
+    collectionName = _getMessageCollectionName( simId )
+    # check if the collection exists at all
+    if len( db.list_collection_names( filter = { 'name': collectionName } ) ) == 0:
+        log.debug( f'No collection with name {collectionName}.')
+        return False
+    
+    return True 
 
 def _getEpochsForSimDates( simId, fromSimDate = None, toSimDate = None ):
     '''
