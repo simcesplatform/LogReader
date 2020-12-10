@@ -249,10 +249,12 @@ Get all invalid messages for simulation with id 2020-06-03T04:01:52.345Z.
   {
     "Timestamp": "2020-06-03T04:01:54Z",
     "Topic": "Status.Ready",
-    "InvalidMessageJson": "Ready"
+    "InvalidJsonMessage": "Ready"
   }
 ]
 ```
+
+NOTE: The first message is considered invalid since it is missing the SimulationId attribute. The second message is invalid since it is just a text string containing the word Ready.
 
 ## Get simple timeseries for simulation
 
