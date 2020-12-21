@@ -1,8 +1,14 @@
 # LogReader API
 
-LogReader implements the API described below. This documentation assumes that the reader is familiar with the general messaging concepts of the simulation platform such as epochs and the various message attribute value blocks like TimeseriesBlock and QuantityBlock.   
+LogReader implements the HTTP based API described below. LogReader also offers a simple web browser based interface for the API available from the application root path for example http://localhost:8080/. The API offers the following features:
 
-The following notation is used to document request parameters and members of JSON objects in response and request bodies:
+- Get list of simulations there are messages for.
+- Get information about a single simulation by its id.
+- Get messages for a simulation. Messages can be filtered in various ways such as topic and source process.
+- Get invalid messages published during a simulation run.
+- Create a json or csv time series from attribute values  in messages.     
+
+This documentation assumes that the reader is familiar with the general messaging concepts of the simulation platform such as epochs and the various message attribute value blocks like TimeseriesBlock and QuantityBlock. The following notation is used to document request parameters and members of JSON objects in response and request bodies:
 
 - name (data type, parameter type, required): description
 
@@ -219,7 +225,7 @@ List of invalid messages. The messages will be sorted in ascending order by time
 - Timestamp: Timestamp from the message if the message had a valid timestamp. Otherwise this is a timestamp added when the message was stored to the database.
 - Topic: The topic the message was published to.
 - InvalidMessage: The message itself if it was valid json.
-- InvalidMessageJson: Message as a string if the message could not be parsed as json.   
+- InvalidJsonMessage: Message as a string if the message could not be parsed as json.   
 
 ### Example
 
