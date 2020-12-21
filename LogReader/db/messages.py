@@ -122,13 +122,14 @@ def getInvalidMessages( simId: str, topic: str = None  ) -> Union[List[dict], No
 
 def _simulationExists( simId: str ) -> bool:
     '''
-    Check if simulation with the given id exists by checking if there is a messages collection for it.
+    Check if simulation with the given id exists by checking if there is a messages or invalid messages collection for it.
     '''
-    # name of the mongodb collection containing messages for the simulation
+    # names of the mongodb collection containing messages for the simulation
     collectionName = _getMessageCollectionName( simId )
-    # check if the collection exists at all
-    if len( db.list_collection_names( filter = { 'name': collectionName } ) ) == 0:
-        log.debug( f'No collection with name {collectionName}.')
+    invalidCollectionName = _getInvalidMessageCollectionName( simId )
+    # check if at least one of the collections exists at all
+    if len( db.list_collection_names( filter = { 'name': { '$in': [collectionName, invalidCollectionName]} } ) ) == 0:
+        log.debug( f'No collection with name {collectionName} or {invalidCollectionName}.')
         return False
     
     return True 
