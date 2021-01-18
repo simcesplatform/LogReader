@@ -9,6 +9,9 @@ import threading
 import waitress
 import requests
 
+# disable access logging for tests
+os.environ['LOGREADER_ACCESS_LOGGING'] = 'false'
+
 from testLogReader import dataManager, testingUtils
 from LogReader.app import api
 from LogReader.db.simulations import simIdAttr

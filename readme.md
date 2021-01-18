@@ -38,7 +38,7 @@ which works both on Windows and Unix based systems. To use this default option r
 
     python -m LogReader.app
 
-By default the app listens on every available interface on port 8080. It tries to connect to a MongoDB instance running on localhost at the default MongoDB port 27017. There it uses a database named messages. The app logs some informational messages but more verbose debug logging is also available. These defaults can be changed with the following environment variables:
+By default the app listens on every available interface on port 8080. It tries to connect to a MongoDB instance running on localhost at the default MongoDB port 27017. There it uses a database named messages. The app logs information about each HTTP request and some additional informational messages but more verbose debug logging is also available. These defaults can be changed with the following environment variables:
 
 - MONGODB_HOST: MongoDB server host name.
 - MONGODB_PORT: MongoDB serverport. 
@@ -48,6 +48,7 @@ By default the app listens on every available interface on port 8080. It tries t
 - LOGREADER_HOST: LogReader listen address.
 - LOGREADER_PORT: LogReader listen port.
 - LOGREADER_DEBUG: Print more verbose log messages when the value of this variable is set to true.
+- LOGREADER_ACCESS_LOGGING: Do not print access information about each request when this is set to false.
 
 For running with another WSGI server the WSGI application is available in the api attribute of the LogReader.app module. So for example to run with Gunicorn:
 
