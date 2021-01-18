@@ -3,6 +3,10 @@
 Tests for the time series api.
 '''
 import unittest
+import os 
+# disable access logging for tests
+os.environ['LOGREADER_ACCESS_LOGGING'] = 'false'
+
 from testLogReader import dataManager, testingUtils
 
 # url path for creating time series from test messages.

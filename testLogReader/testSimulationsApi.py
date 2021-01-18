@@ -4,6 +4,10 @@ Tests for simulation api endpoints.
 Uses falcons testing tools which simulate HTTP requests. 
 '''
 import unittest
+import os 
+
+# disable access logging for tests
+os.environ['LOGREADER_ACCESS_LOGGING'] = 'false'
 
 from testLogReader import dataManager, testingUtils
 from LogReader.db.simulations import simIdAttr

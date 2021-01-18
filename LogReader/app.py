@@ -60,6 +60,9 @@ staticPrefix = '/' # ui available from the root path
 static = StaticSite( staticPrefix ) # use the static controller for delivering the files.
 # note works only on one level e.g. /foo/bar.html does not work.
 api.add_route( staticPrefix +'{file}', static )
+# use Translogger to get logging information about each connection attempt unless it has been disabled with environment variable
+if os.environ.get('LOGREADER_ACCESS_LOGGING') != 'false':
+    api = TransLogger(api)
 
 if __name__ == '__main__':
     # this is main file launch the application
@@ -68,9 +71,8 @@ if __name__ == '__main__':
     port = os.environ.get( 'LOGREADER_PORT', 8080 )
     log.info( f'Starting LogReader. Listening on {host}:{port}.' )
 
-    # start the waitress server using Translogger to get logging information about each connection attempt
     waitress.serve(
-        app=TransLogger(api),
+        app=api,
         host=host,
         port=port
     )

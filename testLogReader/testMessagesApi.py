@@ -4,6 +4,10 @@ Tests for get messages API
 '''
 import unittest
 import json
+import os
+# disable access logging for tests
+os.environ['LOGREADER_ACCESS_LOGGING'] = 'false'
+
 
 from LogReader.db import messages
 from LogReader import utils
