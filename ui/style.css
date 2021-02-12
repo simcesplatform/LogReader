@@ -35,3 +35,46 @@
     display: block;
     white-space: normal;
 }
+
+/* source for tooltip styling the accessible simple tooltip demo:  https://github.com/nico3333fr/van11y-accessible-simple-tooltip-aria */
+/* --------------- styles for Tooltip -----------------------*/
+
+.simpletooltip[aria-hidden="true"] {
+  display: none;
+}
+/* position relative for containers */
+.simpletooltip_container {
+  position: relative;
+}
+
+/* tooltip styles */
+.simpletooltip {
+  position: absolute;
+  z-index: 666;
+  width: 10em;
+  border-radius: .5em;
+  background: rgba( 0, 0, 0, .9 );
+  color: #eee;
+  padding: .5em;
+  text-align: left;
+  line-height: 1.3;
+  right: auto;
+  left: 100%;
+  margin-left: .5em;
+}
+ 
+/* used pseudo-element to make arrows */
+.simpletooltip::before {
+  content: '';
+  speak: none;
+  position: absolute;
+  z-index: 666;
+  width: 10px;
+  height: 10px;
+  pointer-events: none;
+  top: .5em;
+  left: -10px;
+  margin-left: -10px;
+  border: 10px solid transparent;
+  border-right: 10px solid rgba( 0, 0, 0, .9 );
+}
