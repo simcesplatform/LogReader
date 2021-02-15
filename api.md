@@ -145,8 +145,8 @@ Returns messages from the given simulation run. Without parameters returns all m
 - startEpoch (integer, query): Return messages published on or after the given epoch. Not applicable if epoch, fromSimDate or toSimDate are used.
 - endEpoch (integer, query): Return messages published on or before the given epoch. Not applicable if the epoch, fromSimDate or toSimDate are used.
 - epoch (integer, query): return messages published during the given epoch. Not applicable if fromSimDate, toSimDate endEpoch or startEpoch are used.
-- fromSimDate (ISO datetime, query): Return messages starting from the epoch that includes the given date. Not applicable if fromEpoch, epoch or toEpoch are used.
-- toSimDate (ISO datetime, query): Return messages published before or on  the epoch that includes the given date. Not applicable if fromEpoch, epoch or toEpoch are used.
+- fromSimDate (ISO datetime, query): Return messages starting from the epoch that includes the given date. Not applicable if startEpoch, epoch or endEpoch are used.
+- toSimDate (ISO datetime, query): Return messages published before or on  the epoch that includes the given date. Not applicable if startEpoch, epoch or endEpoch are used.
 - process (string, query): Return messages that have been published by the given processes i.e. messages whose source is the given process. Value is a comma separated list of process ids.
 - topic (string, query): Return messages published to the given topic. Supports the same notation that is used when subscribing to the topics i.e. the same wildcard mechanism including the * and # characters.
 - onlyWarnings: (boolean, query): If true only messages that include warnings are returned. If false messages with and without warnings are both returned. False is the default behaviour if this parameter is not used.
@@ -211,7 +211,7 @@ Get messages that process solarPlant1 has published to topic energy.production.s
 method: GET  
 path: /simulations/{simulationId}/messages/invalid
 
-Returns invalid messages from the given simulation run.
+Returns invalid messages from the given simulation run. This is intended for debugging simulation issues. A normal simulation run should not contain invalid messages. 
 
 ### Request parameters
 
