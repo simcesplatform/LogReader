@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
         <meta charset="utf-8">
         <title>Logging System API</title>
@@ -143,12 +143,12 @@
                             <td class="query_td"><input type="text" id="timeseries_toSimDate" size="30" class="js-simple-tooltip" data-simpletooltip-text="Use messages published before or on the epoch that includes the given date. Not applicable if start epoch, epoch or end epoch are used."></td>
                         </tr>
                         <tr>
-                            <td class="query_td"><label for="timeseries_format">Format:</label></td>
+                            <td class="query_td">Format:</td>
                             <td class="query_td">
-                                <input type="radio" name="timeseries_format" value="json" checked class="js-simple-tooltip" data-simpletooltip-text="Return timeseries in the JSON format.">
-                                <label for="timeseries_format">JSON</label>
-                                <input type="radio" name="timeseries_format" value="csv" class="js-simple-tooltip" data-simpletooltip-text="Return timeseries in the CSV format.">
-                                <label for="timeseries_format">CSV</label>
+                                <input type="radio" id="format_json" name="timeseries_format" value="json" checked class="js-simple-tooltip" data-simpletooltip-text="Return timeseries in the JSON format.">
+                                <label for="format_json">JSON</label>
+                                <input type="radio" id="format_csv" name="timeseries_format" value="csv" class="js-simple-tooltip" data-simpletooltip-text="Return timeseries in the CSV format.">
+                                <label for="format_csv">CSV</label>
                             </td>
                         </tr>
                         <tr>
