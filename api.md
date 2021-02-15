@@ -1,4 +1,4 @@
-# LogReader API
+## API overview 
 
 LogReader implements the HTTP based API described below. LogReader also offers a simple web browser based interface for the API available from the application root path for example http://localhost:8080/. The API offers the following features:
 

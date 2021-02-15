@@ -8,6 +8,7 @@ RUN pip install -r /LogReader/requirements.txt
 COPY LogReader /LogReader/LogReader
 COPY testLogReader /LogReader/testLogReader
 COPY ui /LogReader/ui
+COPY api.md /LogReader/api.md
 
 WORKDIR /LogReader
 

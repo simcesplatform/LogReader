@@ -162,6 +162,7 @@ class TestWebServer(unittest.TestCase):
         # file path in url and expected content type
         filesAndTypes = {
             '': 'text/html',
+            '/api.html': 'text/html',
             '/main.js': 'application/javascript',
             '/style.css': 'text/css'
         }
