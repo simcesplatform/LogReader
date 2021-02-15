@@ -71,7 +71,7 @@ buildApiDoc()
 jsonHandler = falcon.media.JSONHandler(
     dumps = partial(
         json.dumps, default = utils.jsonSerializeDate,
-        ensure_ascii=False, sort_keys=True
+        indent = 4, ensure_ascii=False, sort_keys=True
         )
     )
 
