@@ -19,10 +19,16 @@
                     <p>Returns a list of simulation runs the message database has messages for.</p>
                     <table class="query_table">
                         <tr>
-                            <td class="button_td">
-                                <form>
+                            <td class="query_td"><label for="simulations_fromDate">From date:</label></td>
+                            <td class="query_td"><input type="text" id="simulations_fromDate" size="30" class="js-simple-tooltip" data-simpletooltip-text="Return simulation runs which have started on or after the given date."></td>
+                        </tr>
+                        <tr>
+                            <td class="query_td"><label for="simulations_toDate">To date:</label></td>
+                            <td class="query_td"><input type="text" id="simulations_toDate" size="30" class="js-simple-tooltip" data-simpletooltip-text="Return simulation runs that have been started before the given date."></td>
+                        </tr>
+                        <tr>
+                            <td class="button_td" colspan="2">
                                     <input type="button" onClick="getSimulations()" value="Send query">
-                                </form>
                             </td>
                         </tr>
                     </table>

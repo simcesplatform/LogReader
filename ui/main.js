@@ -7,9 +7,24 @@ function getHostname() {
 }
 
 function getSimulations() {
-    const fullUrl = getHostname() + "/simulations";
-    updateLatestQuery(fullUrl);
-    window.open(fullUrl);
+    const fromDate = document.getElementById("simulations_fromDate").value;
+    const toDate = document.getElementById("simulations_toDate").value;
+    let url = getHostname() + "/simulations";
+    let queryParams = [];
+    if ( fromDate !== "" ) {
+        queryParams.push( "fromDate=" +fromDate );
+    }
+    
+    if ( toDate !== "" ) {
+        queryParams.push( "toDate=" +toDate );
+    }
+    
+    if ( queryParams.length > 0 ) {
+        url = url +"?" +queryParams.join("&");
+    }
+    
+    updateLatestQuery(url);
+    window.open(url);
 }
 
 function getSimulation() {
