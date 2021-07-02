@@ -46,6 +46,8 @@ By default the app listens on every available interface on port 8080. It tries t
 - MONGODB_USERNAME: User name for authentication to MongoDB.
 - MONGODB_PASSWORD: Password for authentication to MongoDB.
 - MONGODB_ADMIN: If set to true MongoDB authentication is done against the admin database. If set to false the "messages" database or the one given in MONGODB_DATABASE is used as the authentication source.
+- MONGODB_TLS: If set to true TLS is used when connecting to MongoDB.
+- MONGODB_TLS_ALLOW_INVALID_CERTIFICATES: When using TLS if set to true MongoDB server certificates are not validated.
 - LOGREADER_HOST: LogReader listen address.
 - LOGREADER_PORT: LogReader listen port.
 - LOGREADER_DEBUG: Print more verbose log messages when the value of this variable is set to true.

@@ -14,7 +14,10 @@ host = os.environ.get("MONGODB_HOST", "localhost")
 port = int(os.environ.get("MONGODB_PORT", 27017))
 dbName = os.environ.get("MONGODB_DATABASE", "messages")
 authDbName = 'admin' if os.environ.get("MONGODB_ADMIN", 'true' ) == 'true' else dbName
-log.info( f'Establishing connection to MongoDB. host: {host}, port: {port}, database: {dbName}, authentication database: {authDbName}.' )
+useTls = os.environ.get("MONGODB_TLS", 'false' ) == 'true'
+# should not be False if tls is not used since mongo connection raises an exception
+invalidCertificates = os.environ.get("MONGODB_TLS_ALLOW_INVALID_CERTIFICATES", 'false' ) == 'true' if useTls else True
+log.info( f'Establishing connection to MongoDB. host: {host}, port: {port}, database: {dbName}, authentication database: {authDbName}, use tls: {useTls}, allow invalid certificates: {invalidCertificates}.' )
 client = pymongo.MongoClient( 
     host = host,
     port = port,
@@ -22,6 +25,8 @@ client = pymongo.MongoClient(
     username = os.environ.get("MONGODB_USERNAME", None ),
     password = os.environ.get("MONGODB_PASSWORD", None ),
     authSource = authDbName,
+    tls = useTls,
+    tlsAllowInvalidCertificates = invalidCertificates,
     appname = 'LogReader' ) # app name should be visible in some mongodb logs
 # the database containing the messages and simulation information
 db = client[ dbName ]
